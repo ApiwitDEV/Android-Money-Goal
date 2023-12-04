@@ -15,3 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Money Goal"
 include(":app")
+include(":data")
+include(":domain")
