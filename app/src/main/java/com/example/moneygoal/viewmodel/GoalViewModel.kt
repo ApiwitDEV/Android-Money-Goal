@@ -18,7 +18,11 @@ class GoalViewModel(
     private val addGoalUseCase: AddGoalUseCase
 ): ViewModel() {
 
-    private val _error = MutableLiveData("")
+    init {
+        println()
+    }
+
+    private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
     private val _x = mutableStateOf(0)
