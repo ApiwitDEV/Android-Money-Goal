@@ -7,11 +7,13 @@ import androidx.activity.compose.setContent
 import com.example.moneygoal.ui.navigation.NavigationHost
 import com.example.moneygoal.ui.theme.MoneyGoalTheme
 import com.example.moneygoal.viewmodel.GoalViewModel
+import com.example.moneygoal.viewmodel.TransactionViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
     private val goalViewModel by viewModel<GoalViewModel>()
+    private val transactionViewModel by viewModel<TransactionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +23,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyGoalTheme {
                 //A surface container using the 'background' color from the theme
-                NavigationHost(goalViewModel)
+                NavigationHost(
+                    goalViewModel = goalViewModel,
+                    transactionViewModel = transactionViewModel
+                )
             }
         }
     }

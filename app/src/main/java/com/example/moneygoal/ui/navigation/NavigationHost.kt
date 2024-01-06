@@ -7,10 +7,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.moneygoal.ui.page.dashboard.DashboardScreen
 import com.example.moneygoal.ui.page.home.HomeScreen
 import com.example.moneygoal.viewmodel.GoalViewModel
+import com.example.moneygoal.viewmodel.TransactionViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationHost(
-    goalViewModel: GoalViewModel
+    goalViewModel: GoalViewModel,
+    transactionViewModel: TransactionViewModel
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = NavigationRoute.HomeScreen.name) {
@@ -18,8 +24,12 @@ fun NavigationHost(
         composable(route = NavigationRoute.HomeScreen.name) {
             HomeScreen(
                 goalViewModel = goalViewModel,
+                transactionViewModel = transactionViewModel,
                 onGoto = {
-                    navController.navigate(route = NavigationRoute.DashboardScreen.name)
+                    CoroutineScope(context = Dispatchers.Main).launch {
+                        delay(200)
+                        navController.navigate(route = NavigationRoute.DashboardScreen.name)
+                    }
                 }
             )
         }

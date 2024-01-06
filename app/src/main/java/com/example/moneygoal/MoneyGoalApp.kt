@@ -7,6 +7,7 @@ import com.example.data.repository.GoalRepositoryImpl
 import com.example.domain.GetGoalUseCase
 import com.example.domain.AddGoalUseCase
 import com.example.moneygoal.viewmodel.GoalViewModel
+import com.example.moneygoal.viewmodel.TransactionViewModel
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -23,6 +24,7 @@ class MoneyGoalApp: Application() {
 
         val appModule = module {
             viewModel { GoalViewModel(get(), get()) }
+            viewModel { TransactionViewModel() }
         }
 
         val domainModule = module {
