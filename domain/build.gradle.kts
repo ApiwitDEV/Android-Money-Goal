@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.domain"
+    namespace = "com.overshoot.domain"
     compileSdk = 34
 
     defaultConfig {

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.overshoot.data"
     compileSdk = 34
 
     defaultConfig {

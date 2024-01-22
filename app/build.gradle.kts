@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.moneygoal"
+    namespace = "com.overshoot.moneygoal"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.moneygoal"
+        applicationId = "com.overshoot.moneygoal"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
