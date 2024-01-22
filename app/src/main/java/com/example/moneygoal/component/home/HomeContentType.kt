@@ -1,4 +1,4 @@
-package com.example.moneygoal.ui.page.home
+package com.example.moneygoal.component.home
 
 enum class HomeContentType {
 

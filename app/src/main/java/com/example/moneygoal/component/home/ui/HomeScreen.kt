@@ -1,4 +1,4 @@
-package com.example.moneygoal.ui.page.home
+package com.example.moneygoal.component.home.ui
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -39,7 +39,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -49,9 +48,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.moneygoal.R
-import com.example.moneygoal.ui.theme.MoneyGoalTheme
-import com.example.moneygoal.viewmodel.GoalViewModel
-import com.example.moneygoal.viewmodel.TransactionViewModel
+import com.example.moneygoal.common.ui.LoadingDialog
+import com.example.moneygoal.component.home.HomeContentType
+import com.example.moneygoal.theme.MoneyGoalTheme
+import com.example.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
+import com.example.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,16 +70,29 @@ fun HomeScreen(
     val transactionExpense = remember { mutableStateOf("") }
     val expand = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val x = LocalLifecycleOwner.current
-//    if (transactionViewModel.addTransactionSuccess.value == true) {
-//        Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
-//        transactionViewModel.clearStatus()
-//    }
+
     LaunchedEffect(key1 = Unit) {
-        transactionViewModel.addTransactionSuccess2.observe(x) {
-            Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
+        transactionViewModel.subscribe2()
+    }
+
+    LaunchedEffect(key1 = transactionViewModel.transaction.value, key2 = transactionViewModel.isLoading.value) {
+        if (!transactionViewModel.isLoading.value) {
+            Toast.makeText(context, transactionViewModel.transaction.value.toString(), Toast.LENGTH_SHORT).show()
         }
     }
+
+    LaunchedEffect(key1 = transactionViewModel.error.value) {
+        Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+    }
+
+    LaunchedEffect(key1 = transactionViewModel.isConnectingLost.value) {
+        Toast.makeText(context, "connecting lost", Toast.LENGTH_SHORT).show()
+    }
+
+    if (transactionViewModel.isLoading.value) {
+        LoadingDialog()
+    }
+
     HomeContent(
         sheetState = sheetState,
         showBottomSheet = showBottomSheet.value,

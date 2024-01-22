@@ -1,4 +1,4 @@
-package com.example.moneygoal.ui.page.dashboard
+package com.example.moneygoal.component.dashboard
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

@@ -1,6 +1,5 @@
-package com.example.moneygoal.ui.page.home
+package com.example.moneygoal.component.home.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,8 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.moneygoal.ui.theme.MoneyGoalTheme
-import com.example.moneygoal.ui.theme.Pink80
+import com.example.moneygoal.theme.MoneyGoalTheme
 
 @Composable
 fun SummaryComponent(onClick: () -> Unit) {

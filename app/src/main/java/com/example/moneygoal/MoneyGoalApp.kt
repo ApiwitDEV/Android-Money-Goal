@@ -1,13 +1,19 @@
 package com.example.moneygoal
 
 import android.app.Application
+import com.example.data.datasource.local.transaction.FakeTransactionDataSource
+import com.example.data.datasource.local.transaction.StreamingDataSource
+import com.example.data.datasource.local.transaction.TransactionEntity
 import com.example.data.datasource.remote.network.Connectivity
 import com.example.data.repository.GoalRepository
 import com.example.data.repository.GoalRepositoryImpl
+import com.example.data.repository.TransactionRepository
+import com.example.data.repository.TransactionRepositoryImpl
 import com.example.domain.GetGoalUseCase
 import com.example.domain.AddGoalUseCase
-import com.example.moneygoal.viewmodel.GoalViewModel
-import com.example.moneygoal.viewmodel.TransactionViewModel
+import com.example.domain.AddTransactionUseCase
+import com.example.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
+import com.example.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -24,17 +30,22 @@ class MoneyGoalApp: Application() {
 
         val appModule = module {
             viewModel { GoalViewModel(get(), get()) }
-            viewModel { TransactionViewModel() }
+            viewModel { TransactionViewModel(get()) }
         }
 
         val domainModule = module {
             factory { GetGoalUseCase(get()) }
             factory { AddGoalUseCase(get()) }
+            factory { AddTransactionUseCase(get()) }
         }
 
         val dataModule = module {
+
+            single<StreamingDataSource<TransactionEntity>> { FakeTransactionDataSource() }
+
             single { Connectivity(androidContext()) }
             single<GoalRepository> { GoalRepositoryImpl() }
+            single<TransactionRepository> { TransactionRepositoryImpl(get()) }
         }
 
         val allModule = listOf(appModule, domainModule, dataModule)

@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.moneygoal.ui.navigation.NavigationHost
-import com.example.moneygoal.ui.theme.MoneyGoalTheme
-import com.example.moneygoal.viewmodel.GoalViewModel
-import com.example.moneygoal.viewmodel.TransactionViewModel
+import com.example.moneygoal.navigation.NavigationHost
+import com.example.moneygoal.theme.MoneyGoalTheme
+import com.example.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
+import com.example.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {

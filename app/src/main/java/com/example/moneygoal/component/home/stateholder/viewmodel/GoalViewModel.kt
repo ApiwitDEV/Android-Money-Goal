@@ -1,7 +1,6 @@
-package com.example.moneygoal.viewmodel
+package com.example.moneygoal.component.home.stateholder.viewmodel
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
