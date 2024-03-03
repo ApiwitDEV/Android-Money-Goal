@@ -71,7 +71,7 @@ fun HomeScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = Unit) {
-        transactionViewModel.subscribe2()
+        transactionViewModel.subscribe()
     }
 
     LaunchedEffect(key1 = transactionViewModel.transaction.value, key2 = transactionViewModel.isLoading.value) {

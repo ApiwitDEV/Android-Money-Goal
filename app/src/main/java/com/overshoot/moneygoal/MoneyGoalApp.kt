@@ -1,6 +1,14 @@
 package com.overshoot.moneygoal
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.overshoot.data.datasource.local.transaction.FakeTransactionDataSource
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
@@ -29,6 +37,7 @@ class MoneyGoalApp: Application() {
         super.onCreate()
 
         val appModule = module {
+            viewModel { NotificationViewModel() }
             viewModel { GoalViewModel(get(), get()) }
             viewModel { TransactionViewModel(get()) }
         }
@@ -48,7 +57,11 @@ class MoneyGoalApp: Application() {
             single<TransactionRepository> { TransactionRepositoryImpl(get()) }
         }
 
-        val allModule = listOf(appModule, domainModule, dataModule)
+        val other = module {
+            //single { MyFirebaseMessagingService(context = androidContext()) }
+        }
+
+        val allModule = listOf(appModule, domainModule, dataModule, other)
 
         startKoin {
             // Log Koin into Android logger
@@ -60,7 +73,5 @@ class MoneyGoalApp: Application() {
         }
 
         connectivity.requestNetwork()
-
     }
-
 }

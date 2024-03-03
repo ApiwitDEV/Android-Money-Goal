@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Money Goal</string>
+
+    <string name="notification_chanel_name">channel_name</string>
+    <string name="notification_chanel_description"> description </string>
+
 </resources>

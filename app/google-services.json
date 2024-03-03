@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "596910917282",
+    "project_id": "money-goal-bfc71",
+    "storage_bucket": "money-goal-bfc71.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596910917282:android:d73f0f280495b64ad6f9fb",
+        "android_client_info": {
+          "package_name": "com.overshoot.moneygoal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWBXSK2hjlKIdR6_F77uPmSRbtPDymerA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

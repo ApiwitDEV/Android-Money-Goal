@@ -7,27 +7,30 @@ import androidx.lifecycle.viewModelScope
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.onFailure
 import com.overshoot.data.datasource.onSuccess
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel<R: Any,T: Any>: ViewModel() {
+abstract class BaseViewModel: ViewModel() {
 
     private val _isLoading = mutableStateOf(false)
     val  isLoading: State<Boolean> = _isLoading
 
-    protected val _error = mutableStateOf("")
-    val error: State<String> = _error
+    protected val mError = mutableStateOf("")
+    val error: State<String> = mError
 
-    protected val _isConnectingLost = mutableStateOf(false)
-    val isConnectingLost: State<Boolean> = _isConnectingLost
+    protected val mIsConnectingLost = mutableStateOf(false)
+    val isConnectingLost: State<Boolean> = mIsConnectingLost
 
-    abstract fun R.mapToUIState(): T
-
-    protected fun executeUseCase(
+    protected fun <T: Any, R: Any> executeUseCase(
         onLoading: () -> Unit = {},
-        action: suspend () -> ResultData<R>,
-        onSuccess: (T) -> Unit,
+        mapToUIState: (T) -> R,
+        action: suspend () -> ResultData<T>,
+        onSuccess: (R) -> Unit,
         onFailure: (String) -> Unit,
         onConnectingNotAvailable: () -> Unit
     ) {
@@ -37,7 +40,7 @@ abstract class BaseViewModel<R: Any,T: Any>: ViewModel() {
             action()
                 .onSuccess {
                     _isLoading.value = false
-                    onSuccess(it.mapToUIState())
+                    onSuccess(mapToUIState(it))
                 }
                 .onFailure {
                     _isLoading.value = false
@@ -50,14 +53,15 @@ abstract class BaseViewModel<R: Any,T: Any>: ViewModel() {
         }
     }
 
-    protected fun observeStreamingData(
+    protected fun <T, R> observeStreamingData(
         action: suspend () -> Flow<R>,
+        mapToUIState: (R) -> T,
         onDataReceived: (T) -> Unit
     ) {
         viewModelScope.launch {
             action()
                 .map {
-                    it.mapToUIState()
+                    mapToUIState(it)
                 }
                 .collect {
                     onDataReceived(it)
