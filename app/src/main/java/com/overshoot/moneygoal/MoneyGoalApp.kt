@@ -1,14 +1,6 @@
 package com.overshoot.moneygoal
 
-import android.annotation.SuppressLint
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.pm.PackageManager
-import android.os.Build
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.overshoot.data.datasource.local.transaction.FakeTransactionDataSource
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
@@ -31,8 +23,6 @@ import org.koin.dsl.module
 
 class MoneyGoalApp: Application() {
 
-    private val connectivity by inject<Connectivity>()
-
     override fun onCreate() {
         super.onCreate()
 
@@ -49,10 +39,9 @@ class MoneyGoalApp: Application() {
         }
 
         val dataModule = module {
-
+            single { Connectivity(androidContext()) }
             single<StreamingDataSource<TransactionEntity>> { FakeTransactionDataSource() }
 
-            single { Connectivity(androidContext()) }
             single<GoalRepository> { GoalRepositoryImpl() }
             single<TransactionRepository> { TransactionRepositoryImpl(get()) }
         }
@@ -71,7 +60,5 @@ class MoneyGoalApp: Application() {
             // Load modules
             modules(allModule)
         }
-
-        connectivity.requestNetwork()
     }
 }

@@ -1,6 +1,7 @@
 package com.overshoot.moneygoal.component.home.ui
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -52,6 +53,9 @@ import com.overshoot.moneygoal.component.home.HomeContentType
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import kotlinx.coroutines.launch
+import java.time.Year
+import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,13 +88,11 @@ fun HomeScreen(
         Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
     }
 
-    LaunchedEffect(key1 = transactionViewModel.isConnectingLost.value) {
-        Toast.makeText(context, "connecting lost", Toast.LENGTH_SHORT).show()
-    }
-
     if (transactionViewModel.isLoading.value) {
         LoadingDialog()
     }
+
+    YearMonth.now()
 
     HomeContent(
         sheetState = sheetState,
@@ -101,6 +103,9 @@ fun HomeScreen(
         },
         onAddGoal = {
             showBottomSheet.value = true
+            scope.launch {
+                sheetState.show()
+            }
         },
         onGoto = {
             onGoto()
@@ -111,6 +116,9 @@ fun HomeScreen(
         },
         transactionSuccess = transactionViewModel.addTransactionSuccess.value?: false,
         onCloseBottomSheet = {
+            scope.launch {
+                sheetState.hide()
+            }
             showBottomSheet.value = false
         },
         onAddTransaction = {
@@ -140,6 +148,7 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeContent(
+    x: Int = 0,
     sheetState: SheetState,
     showBottomSheet: Boolean,
     selected: HomeContentType,

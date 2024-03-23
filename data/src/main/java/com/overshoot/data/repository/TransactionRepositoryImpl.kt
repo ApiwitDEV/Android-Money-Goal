@@ -20,9 +20,11 @@ class TransactionRepositoryImpl(
     private val fakeTransactionDataSource: StreamingDataSource<TransactionEntity>
 ): BaseRepository(), TransactionRepository {
 
+    private var isSubscribe = false
+
     override suspend fun addTransaction(): ResultData<TransactionEntity> {
         return callRestFulApi {
-            delay(5000)
+            delay(20000)
             TransactionEntity(
                 id = 5,
                 label = "",
@@ -43,9 +45,12 @@ class TransactionRepositoryImpl(
 
     override suspend fun subscribe2(): Flow<TransactionEntity> {
         return flow {
-            fakeTransactionDataSource.bindData {
-                emit(it)
+            if (!isSubscribe) {
+                fakeTransactionDataSource.bindData {
+                    emit(it)
+                }
             }
+            isSubscribe = true
         }.flowOn(Dispatchers.IO)
     }
 

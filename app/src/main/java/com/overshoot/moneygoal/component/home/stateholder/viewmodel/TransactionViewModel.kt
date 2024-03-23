@@ -1,28 +1,14 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
-import com.overshoot.data.datasource.ResultData
-import com.overshoot.data.datasource.local.transaction.TransactionEntity
-import com.overshoot.data.datasource.onFailure
-import com.overshoot.data.datasource.onSuccess
 import com.overshoot.domain.AddTransactionUseCase
+import com.overshoot.moneygoal.AppStateHolder
 import com.overshoot.moneygoal.BaseViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 class TransactionViewModel(
     private val addTransactionUseCase: AddTransactionUseCase
@@ -51,18 +37,15 @@ class TransactionViewModel(
                     goalId = it.goalId
                 )
             },
-            onLoading = {
-
-            },
             onSuccess = {
                 _x.value = it
                 _transaction.value = it
             },
             onFailure = {
-                mError.value = it
+                _error.value = it
             },
             onConnectingNotAvailable = {
-                mIsConnectingLost.value = true
+                AppStateHolder.getInstant()?.showNoInternetStatus()
             }
         )
     }

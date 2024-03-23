@@ -16,9 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
+import java.time.YearMonth
 
 @Composable
 fun HomeDetailContent(onGoto: () -> Unit) {
+    YearMonth.now()
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()

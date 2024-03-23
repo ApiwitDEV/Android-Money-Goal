@@ -12,30 +12,37 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.FirebaseMessagingService
-import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.messaging
+import com.overshoot.data.datasource.remote.network.Connectivity
 import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val connectivity by inject<Connectivity>()
 
     private val notificationViewModel by viewModel<NotificationViewModel>()
 
     private val goalViewModel by viewModel<GoalViewModel>()
     private val transactionViewModel by viewModel<TransactionViewModel>()
+
+    private val appStateHolder = AppStateHolder.getInstant()
     
     private fun askNotificationPermission() {
         when {
@@ -73,8 +80,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        connectivity.requestNetwork()
         askNotificationPermission()
         Firebase.messaging.subscribeToTopic("A")
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
@@ -102,6 +111,32 @@ class MainActivity : ComponentActivity() {
                     goalViewModel = goalViewModel,
                     transactionViewModel = transactionViewModel
                 )
+
+                val sheetState = rememberModalBottomSheetState()
+
+                LaunchedEffect(key1 = null) {
+                    appStateHolder?.collectInternetState(
+                        state = connectivity.state,
+                        onInternetAvailable = {
+                            sheetState.show()
+                        },
+                        onNoInternet = {
+                            sheetState.hide()
+                        }
+                    )
+                }
+
+                if (appStateHolder?.isShowNoInternetDrawer?.value == false) {
+                    ModalBottomSheet(
+                        sheetState = sheetState,
+                        onDismissRequest = {
+                            appStateHolder.hideNoInternetState()
+                        }
+                    ) {
+                        Text(text = "No Internet")
+                    }
+                }
+
                 if (notificationViewModel.showDialog.value == true) {
                     Dialog(onDismissRequest = {
                         notificationViewModel.hideDialog()
@@ -116,6 +151,30 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     private fun createNotificationChannel() {

@@ -7,7 +7,7 @@ class FakeTransactionDataSource: StreamingDataSource<TransactionEntity> {
     override suspend fun bindData(onDataReceived: suspend ( TransactionEntity ) -> Unit) {
         var i = 0
         while (true) {
-            delay(5000)
+            delay(30000)
             onDataReceived(TransactionEntity(
                 id = i,
                 label = "",

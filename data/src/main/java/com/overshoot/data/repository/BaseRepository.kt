@@ -19,12 +19,12 @@ open class BaseRepository {
 
     suspend fun <T: Any> callDB(
         context: CoroutineContext = Dispatchers.Default,
-        operation: suspend CoroutineScope.() -> T
+        action: suspend CoroutineScope.() -> T
     ): ResultData<T> {
         return CoroutineScope(context = context)
             .async {
                 try {
-                    Success(data = operation())
+                    Success(data = action())
                 } catch (e: Exception) {
                     Failure(message = e.message?:"")
                 }
@@ -33,12 +33,12 @@ open class BaseRepository {
     }
 
     suspend fun <T: Any> callRestFulApi(
-        operation: suspend CoroutineScope.() -> T
+        action: suspend CoroutineScope.() -> T
     ): ResultData<T> {
         return if (connectivity.isAvailable()) {
             try {
                 withTimeout(5000) {
-                    Success(data = operation())
+                    Success(data = action())
                 }
             } catch (e: Exception) {
                 Failure(message = e.message?:"")
