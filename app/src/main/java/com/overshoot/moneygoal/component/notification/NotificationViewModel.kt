@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal
+package com.overshoot.moneygoal.component.notification
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

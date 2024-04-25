@@ -1,7 +1,6 @@
 package com.overshoot.moneygoal.component.home.ui
 
 import android.annotation.SuppressLint
-import android.os.Build
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -11,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,12 +34,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -47,15 +50,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.overshoot.moneygoal.AppStateHolder
 import com.overshoot.moneygoal.R
+import com.overshoot.moneygoal.common.UIState
 import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.component.home.HomeContentType
+import com.overshoot.moneygoal.component.home.stateholder.SuccessGoalListStateHolder
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
 import kotlinx.coroutines.launch
-import java.time.Year
-import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,31 +78,41 @@ fun HomeScreen(
     val transactionExpense = remember { mutableStateOf("") }
     val expand = remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val appStateHolder = AppStateHolder.getInstant()
+    var isLoading by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = Unit) {
         transactionViewModel.subscribe()
     }
 
-    LaunchedEffect(key1 = transactionViewModel.transaction.value, key2 = transactionViewModel.isLoading.value) {
-        if (!transactionViewModel.isLoading.value) {
-            Toast.makeText(context, transactionViewModel.transaction.value.toString(), Toast.LENGTH_SHORT).show()
-        }
+    val successGoalListStateHolder = remember { SuccessGoalListStateHolder() }
+
+    LaunchedEffect(key1 = null) {
+        successGoalListStateHolder.collectGoalListState(state = goalViewModel.allGoal)
     }
 
-    LaunchedEffect(key1 = transactionViewModel.error.value) {
-        Toast.makeText(context, "error", Toast.LENGTH_SHORT).show()
+    LaunchedEffect(key1 = null) {
+        goalViewModel.observeAllGoal()
     }
 
-    if (transactionViewModel.isLoading.value) {
+    if (transactionViewModel.isLoading.value || goalViewModel.isLoading.value) {
         LoadingDialog()
     }
 
-    YearMonth.now()
+    val pullToRefreshState = rememberPullToRefreshState(
+    positionalThreshold = 32.dp
+    )
+
+    Column(Modifier) {
+
+    }
 
     HomeContent(
         sheetState = sheetState,
         showBottomSheet = showBottomSheet.value,
         selected = selected.value,
+        successGoalList = successGoalListStateHolder.successGoalList,
+        failGoalList = successGoalListStateHolder.failGoalList,
         onSelectContent = {
             selected.value = it
         },
@@ -122,7 +137,8 @@ fun HomeScreen(
             showBottomSheet.value = false
         },
         onAddTransaction = {
-            transactionViewModel.addTransaction()
+            goalViewModel.addGoal()
+//            transactionViewModel.addTransaction()
         },
         transactionName = transactionName.value,
         onTransactionNameChange = {
@@ -142,6 +158,22 @@ fun HomeScreen(
             transactionRemark.value = ""
         }
     )
+
+    LaunchedEffect(key1 = Unit) {
+        goalViewModel.addGoalState.collect {
+            when(it) {
+                UIState.NO_STATE -> { isLoading = false }
+                UIState.LOADING -> isLoading = true
+                UIState.SUCCESS -> {isLoading = false;Toast.makeText(context, "success", Toast.LENGTH_LONG).show()}
+                UIState.FAILURE -> {isLoading = false;Toast.makeText(context, "Failure", Toast.LENGTH_LONG).show()}
+                UIState.NO_INTERNET -> { isLoading = false }
+            }
+        }
+    }
+
+    if (isLoading) {
+        LoadingDialog()
+    }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -152,6 +184,8 @@ private fun HomeContent(
     sheetState: SheetState,
     showBottomSheet: Boolean,
     selected: HomeContentType,
+    successGoalList: List<GoalItemUIState>,
+    failGoalList: List<GoalItemUIState>,
     onSelectContent: (HomeContentType) -> Unit,
     onAddGoal: () -> Unit,
     onGoto: () -> Unit,
@@ -171,6 +205,7 @@ private fun HomeContent(
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
+        containerColor = Color.Gray.copy(alpha = 0.1f),
         floatingActionButton = {
             if (selected == HomeContentType.HomeContent) {
                 Card(
@@ -198,11 +233,16 @@ private fun HomeContent(
         },
         content = {
             AnimatedVisibility(
+                modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
                 visible = selected == HomeContentType.HomeContent,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                HomeDetailContent(onGoto = onGoto)
+                HomeDetailContent(
+                    onGoto = onGoto,
+                    successGoalList = successGoalList,
+                    failGoalList = failGoalList
+                )
             }
             AnimatedVisibility(
                 visible = selected == HomeContentType.ScanContent,
@@ -384,6 +424,8 @@ private fun PreviewHomeContent() {
             sheetState = rememberModalBottomSheetState(),
             showBottomSheet = false,
             selected = HomeContentType.HomeContent,
+            successGoalList = listOf(),
+            failGoalList = listOf(),
             onSelectContent = {},
             onAddGoal = {},
             onGoto = {},

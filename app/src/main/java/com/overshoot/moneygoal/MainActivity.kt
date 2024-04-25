@@ -17,7 +17,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -30,6 +29,7 @@ import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import com.overshoot.moneygoal.component.notification.NotificationViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -101,9 +101,6 @@ class MainActivity : ComponentActivity() {
                 Log.d("Firebase Log", msg)
             }
         )
-        goalViewModel.error.observe(this) {
-            Toast.makeText(baseContext, goalViewModel.error.value, Toast.LENGTH_SHORT).show()
-        }
         setContent {
             MoneyGoalTheme {
                 //A surface container using the 'background' color from the theme

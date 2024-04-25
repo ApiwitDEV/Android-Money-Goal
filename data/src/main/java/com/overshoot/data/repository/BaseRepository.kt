@@ -18,7 +18,7 @@ open class BaseRepository {
     private val connectivity by inject<Connectivity>(Connectivity::class.java)
 
     suspend fun <T: Any> callDB(
-        context: CoroutineContext = Dispatchers.Default,
+        context: CoroutineContext = Dispatchers.IO,
         action: suspend CoroutineScope.() -> T
     ): ResultData<T> {
         return CoroutineScope(context = context)

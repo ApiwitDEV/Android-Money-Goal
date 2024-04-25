@@ -1,42 +1,115 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.overshoot.data.datasource.onFailure
-import com.overshoot.data.datasource.onSuccess
 import com.overshoot.domain.GetGoalUseCase
 import com.overshoot.domain.AddGoalUseCase
-import kotlinx.coroutines.launch
+import com.overshoot.moneygoal.BaseViewModel
+import com.overshoot.moneygoal.common.UIState
+import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class GoalViewModel(
     private val getGoalUseCase: GetGoalUseCase,
     private val addGoalUseCase: AddGoalUseCase
-): ViewModel() {
+): BaseViewModel() {
 
     init {
         println()
     }
 
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> = _error
+    private var executeCount = 0
 
-    private val _x = mutableStateOf(0)
-    val x: State<Int> = _x
+    private val _addGoalState = MutableStateFlow(UIState.NO_STATE)
+    val addGoalState: StateFlow<UIState> = _addGoalState
+
+    private val _allGoal = MutableStateFlow<MutableList<GoalItemUIState>>(mutableListOf())
+    val allGoal: StateFlow<List<GoalItemUIState>> = _allGoal
+
+    fun clearExecuteCount() {
+        executeCount = 0
+    }
 
     fun addGoal() {
-        viewModelScope.launch {
-            addGoalUseCase.addGoal()
-                .onSuccess {
-                    _x.value = it
+        _addGoalState.value = UIState.LOADING
+        executeUseCase(
+            mapToUIState = {
+
+            },
+            action = {
+                delay(2000)
+                addGoalUseCase.addGoal()
+            },
+            onSuccess = {
+                _addGoalState.value = UIState.SUCCESS
+            },
+            onFailure = {
+                it
+                _addGoalState.value = UIState.FAILURE
+            },
+            onConnectingNotAvailable = {
+                _addGoalState.value = UIState.NO_INTERNET
+            }
+        )
+    }
+
+//    fun getAllGoal() {
+//        if (executeCount == 0) {
+//            executeUseCase(
+//                action = {
+//                    getGoalUseCase.getAllGoal()
+//                },
+//                mapToUIState = {
+//                    mutableListOf<GoalItemUIState>().apply {
+//                        it.forEach {
+//                            this.add(
+//                                GoalItemUIState(
+//                                    id = it.id,
+//                                    name = it.name?:"",
+//                                    isSuccess = true
+//                                )
+//                            )
+//                        }
+//                    }
+//                },
+//                onSuccess = {
+//                    _allGoal.value = it
+//                    executeCount += 1
+//                },
+//                onFailure = {
+//
+//                },
+//                onConnectingNotAvailable = {
+//
+//                }
+//            )
+//        }
+//    }
+
+    fun observeAllGoal() {
+        observeStreamingData(
+            action = {
+                getGoalUseCase.getAllGoal()
+            },
+            mapToUIState = {
+                mutableListOf<GoalItemUIState>().apply {
+                    it.forEach {
+                        this.add(
+                            GoalItemUIState(
+                                id = it.id,
+                                name = it.name?:"",
+                                isSuccess = true,
+                                objective = "limit",
+                                target = 1000.0
+                            )
+                        )
+                    }
                 }
-                .onFailure {
-                    _error.value = it
-                }
-        }
+            },
+            onDataReceived = {
+                _allGoal.value = it
+            }
+        )
     }
 
 }

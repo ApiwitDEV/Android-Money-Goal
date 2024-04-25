@@ -31,10 +31,10 @@ class TransactionViewModel(
             mapToUIState = {
                 TransactionUIState(
                     id = it.id,
-                    label = it.label,
-                    cost = it.cost,
+                    label = it.name,
+                    cost = it.moneyAmount,
                     remark = it.remark,
-                    goalId = it.goalId
+                    goalId = it.id
                 )
             },
             onSuccess = {
@@ -61,10 +61,10 @@ class TransactionViewModel(
             mapToUIState = {
                 TransactionUIState(
                     id = it.id,
-                    label = it.label,
-                    cost = it.cost,
+                    label = it.name,
+                    cost = it.moneyAmount,
                     remark = it.remark,
-                    goalId = it.goalId
+                    goalId = it.id
                 )
             },
             onDataReceived = {

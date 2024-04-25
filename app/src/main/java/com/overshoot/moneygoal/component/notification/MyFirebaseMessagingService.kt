@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal
+package com.overshoot.moneygoal.component.notification
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,6 +9,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.overshoot.moneygoal.MainActivity
+import com.overshoot.moneygoal.R
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
 

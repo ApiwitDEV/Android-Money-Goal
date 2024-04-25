@@ -8,13 +8,18 @@ class FakeTransactionDataSource: StreamingDataSource<TransactionEntity> {
         var i = 0
         while (true) {
             delay(30000)
-            onDataReceived(TransactionEntity(
-                id = i,
-                label = "",
-                cost = i*10.0,
-                remark = "",
-                goalId = i
-            ))
+            onDataReceived(
+                TransactionEntity(
+                    id = i,
+                    name = "",
+                    type = "cost",
+                    createAt = "",
+                    updateAt = "",
+                    moneyAmount = 30.0,
+//                    categoryId = listOf(),
+                    remark = ""
+                    )
+            )
             i++
         }
     }

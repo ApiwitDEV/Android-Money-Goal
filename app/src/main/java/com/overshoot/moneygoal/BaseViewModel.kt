@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-abstract class BaseViewModel: ViewModel() {
+open class BaseViewModel: ViewModel() {
 
     private val _isLoading = mutableStateOf(false)
     val  isLoading: State<Boolean> = _isLoading

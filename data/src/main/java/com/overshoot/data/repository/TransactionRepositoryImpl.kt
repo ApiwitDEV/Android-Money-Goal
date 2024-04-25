@@ -27,10 +27,13 @@ class TransactionRepositoryImpl(
             delay(20000)
             TransactionEntity(
                 id = 5,
-                label = "",
-                cost = 50.0,
-                remark = "",
-                goalId = 5
+                name = "",
+                createAt = "",
+                updateAt = "",
+//                categoryId = listOf(),
+                moneyAmount = 5.5,
+                type = "",
+                remark = ""
             )
         }
     }
