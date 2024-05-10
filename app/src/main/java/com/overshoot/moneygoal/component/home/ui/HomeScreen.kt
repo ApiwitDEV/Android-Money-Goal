@@ -8,32 +8,22 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -55,68 +45,73 @@ import com.overshoot.moneygoal.R
 import com.overshoot.moneygoal.common.UIState
 import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.component.home.HomeContentType
-import com.overshoot.moneygoal.component.home.stateholder.SuccessGoalListStateHolder
+import com.overshoot.moneygoal.component.home.stateholder.GoalListStateHolder
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
+import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
+import com.overshoot.moneygoal.component.home.uistatemodel.GoalPeriodItemUIState
+import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    goalViewModel: GoalViewModel,
-    transactionViewModel: TransactionViewModel,
+    homeGoalDetailViewModel: HomeGoalDetailViewModel,
+    homeTransactionViewModel: HomeTransactionViewModel,
     onGoto: () -> Unit
 ) {
     val selected = remember { mutableStateOf(HomeContentType.HomeContent) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val showBottomSheet = remember { mutableStateOf(false) }
-    val transactionName = remember { mutableStateOf("") }
-    val transactionRemark = remember { mutableStateOf("") }
-    val transactionExpense = remember { mutableStateOf("") }
-    val expand = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val appStateHolder = AppStateHolder.getInstant()
     var isLoading by remember { mutableStateOf(false) }
+    var sheetType by remember { mutableStateOf<SheetType?>(null) }
 
     LaunchedEffect(key1 = Unit) {
-        transactionViewModel.subscribe()
+        homeTransactionViewModel.subscribe()
     }
 
-    val successGoalListStateHolder = remember { SuccessGoalListStateHolder() }
+    val goalListStateHolder = remember { GoalListStateHolder() }
 
     LaunchedEffect(key1 = null) {
-        successGoalListStateHolder.collectGoalListState(state = goalViewModel.allGoal)
+        goalListStateHolder.collectGoalPeriodListState(
+            state = homeGoalDetailViewModel.goalPeriodList
+        )
     }
 
     LaunchedEffect(key1 = null) {
-        goalViewModel.observeAllGoal()
+        goalListStateHolder.collectGoalListState(state = homeGoalDetailViewModel.allGoal)
     }
 
-    if (transactionViewModel.isLoading.value || goalViewModel.isLoading.value) {
+    LaunchedEffect(key1 = null) {
+        homeGoalDetailViewModel.observeGoalPeriodList()
+        homeGoalDetailViewModel.observeAllGoal()
+    }
+
+    if (homeTransactionViewModel.isLoading.value || homeGoalDetailViewModel.isLoading.value) {
         LoadingDialog()
-    }
-
-    val pullToRefreshState = rememberPullToRefreshState(
-    positionalThreshold = 32.dp
-    )
-
-    Column(Modifier) {
-
     }
 
     HomeContent(
         sheetState = sheetState,
         showBottomSheet = showBottomSheet.value,
         selected = selected.value,
-        successGoalList = successGoalListStateHolder.successGoalList,
-        failGoalList = successGoalListStateHolder.failGoalList,
+        goalPeriodList = goalListStateHolder.goalPeriodItemUIStateList,
+        selectedGoalPeriod = goalListStateHolder.selectedGoalPeriod.value,
+        onSelectPeriod = {
+            goalListStateHolder.onSelectPeriod(it)
+            goalListStateHolder.showGoalByPeriod(it)
+        },
+        successGoalList = goalListStateHolder.goalListToShow,
+        failGoalList = goalListStateHolder.failGoalList,
         onSelectContent = {
             selected.value = it
         },
-        onAddGoal = {
+        openAddGoalSheet = {
+            sheetType = SheetType.AddGoalSheet
             showBottomSheet.value = true
             scope.launch {
                 sheetState.show()
@@ -125,48 +120,65 @@ fun HomeScreen(
         onGoto = {
             onGoto()
         },
-        expand = expand.value,
-        onExpandChange = {
-            expand.value = !expand.value
-        },
-        transactionSuccess = transactionViewModel.addTransactionSuccess.value?: false,
-        onCloseBottomSheet = {
+        openAddTransactionSheet = {
+            sheetType = SheetType.AddTransactionSheet
+            showBottomSheet.value = true
             scope.launch {
-                sheetState.hide()
+                sheetState.show()
             }
-            showBottomSheet.value = false
         },
-        onAddTransaction = {
-            goalViewModel.addGoal()
-//            transactionViewModel.addTransaction()
-        },
-        transactionName = transactionName.value,
-        onTransactionNameChange = {
-            transactionName.value = it
-        },
-        transactionRemark = transactionRemark.value,
-        onTransactionRemarkChange = {
-            transactionRemark.value = it
-        },
-        transactionExpense = transactionExpense.value,
-        onTransactionExpenseChange = {
-            transactionExpense.value = it
-        },
-        onClear = {
-            transactionName.value = ""
-            transactionExpense.value = ""
-            transactionRemark.value = ""
+        transactionList = homeTransactionViewModel.transaction.value,
+        onClickGoal = {
+            goalListStateHolder.onClickGoal(it)
         }
     )
 
     LaunchedEffect(key1 = Unit) {
-        goalViewModel.addGoalState.collect {
+        homeGoalDetailViewModel.addGoalState.collect {
             when(it) {
                 UIState.NO_STATE -> { isLoading = false }
                 UIState.LOADING -> isLoading = true
                 UIState.SUCCESS -> {isLoading = false;Toast.makeText(context, "success", Toast.LENGTH_LONG).show()}
                 UIState.FAILURE -> {isLoading = false;Toast.makeText(context, "Failure", Toast.LENGTH_LONG).show()}
                 UIState.NO_INTERNET -> { isLoading = false }
+            }
+        }
+    }
+
+    if (showBottomSheet.value) {
+        when(sheetType) {
+            SheetType.AddTransactionSheet -> {
+                AddTransactionBottomSheet(
+                    sheetState = sheetState,
+                    onCloseBottomSheet = {
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        showBottomSheet.value = false
+                        sheetType = null
+                    },
+                    onAddTransaction = {
+                        homeTransactionViewModel.addTransaction(transaction = it)
+                    }
+                )
+            }
+            SheetType.AddGoalSheet -> {
+                AddGoalBottomSheet(
+                    sheetState = sheetState,
+                    onCloseBottomSheet = {
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        showBottomSheet.value = false
+                        sheetType = null
+                    },
+                    onAddGoal = { goalName, goalObjective, period, targetValue ->
+                        homeGoalDetailViewModel.addGoal(goalName, goalObjective, period, targetValue)
+                    }
+                )
+            }
+            null -> {
+
             }
         }
     }
@@ -184,23 +196,17 @@ private fun HomeContent(
     sheetState: SheetState,
     showBottomSheet: Boolean,
     selected: HomeContentType,
+    goalPeriodList: List<GoalPeriodItemUIState>,
+    selectedGoalPeriod: String,
+    onSelectPeriod: (String) -> Unit,
     successGoalList: List<GoalItemUIState>,
     failGoalList: List<GoalItemUIState>,
     onSelectContent: (HomeContentType) -> Unit,
-    onAddGoal: () -> Unit,
+    openAddGoalSheet: () -> Unit,
     onGoto: () -> Unit,
-    expand: Boolean,
-    onExpandChange: () -> Unit,
-    transactionSuccess: Boolean,
-    onCloseBottomSheet: () -> Unit,
-    onAddTransaction: () -> Unit,
-    transactionName: String,
-    onTransactionNameChange: (String) -> Unit,
-    transactionRemark: String,
-    onTransactionRemarkChange: (String) -> Unit,
-    transactionExpense: String,
-    onTransactionExpenseChange: (String) -> Unit,
-    onClear: () -> Unit
+    openAddTransactionSheet: () -> Unit,
+    transactionList: List<TransactionUIState>,
+    onClickGoal: (Int) -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -215,7 +221,7 @@ private fun HomeContent(
                 ) {
                     Row(
                         modifier = Modifier
-                            .clickable { onAddGoal() }
+                            .clickable { openAddTransactionSheet() }
                             .padding(all = 12.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -240,8 +246,13 @@ private fun HomeContent(
             ) {
                 HomeDetailContent(
                     onGoto = onGoto,
+                    openGoalSheet = openAddGoalSheet,
+                    goalPeriodList = goalPeriodList,
                     successGoalList = successGoalList,
-                    failGoalList = failGoalList
+                    failGoalList = failGoalList,
+                    selectedGoalPeriod = selectedGoalPeriod,
+                    onSelectPeriod = onSelectPeriod,
+                    onClickGoal = onClickGoal
                 )
             }
             AnimatedVisibility(
@@ -256,7 +267,7 @@ private fun HomeContent(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                TransactionHistoryContent()
+                TransactionHistoryContent(transactionList)
             }
             AnimatedVisibility(
                 visible = selected == HomeContentType.AccountContent,
@@ -264,94 +275,6 @@ private fun HomeContent(
                 exit = fadeOut()
             ) {
                 AccountContent()
-            }
-            if (showBottomSheet) {
-                ModalBottomSheet(
-                    onDismissRequest = {
-                        onCloseBottomSheet()
-                    },
-                    sheetState = sheetState
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(modifier = Modifier.clickable { onExpandChange() }) {
-                                Icon(painter = painterResource(id = R.drawable.baseline_add_24), contentDescription = null)
-                                Text(text = "Tag")
-                                DropdownMenu(expanded = expand, onDismissRequest = {
-                                    onExpandChange()
-                                }) {
-                                    DropdownMenuItem(text = { Text(text = "A") }, onClick = { /*TODO*/ })
-                                    DropdownMenuItem(text = { Text(text = "B") }, onClick = { /*TODO*/ })
-                                    DropdownMenuItem(text = { Text(text = "C") }, onClick = { /*TODO*/ })
-                                }
-                            }
-                            Text(
-                                modifier = Modifier.clickable { onClear() },
-                                text = "Clear"
-                            )
-                        }
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            value = transactionName,
-                            onValueChange = {
-                                onTransactionNameChange(it)
-                            },
-                            placeholder = {
-                                Text(text = "Transaction Name")
-                            }
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            value = transactionRemark,
-                            onValueChange = {
-                                onTransactionRemarkChange(it)
-                            },
-                            placeholder = {
-                                Text(text = "Remark")
-                            }
-                        )
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            value = transactionExpense,
-                            onValueChange = {
-                                onTransactionExpenseChange(it)
-                            },
-                            placeholder = {
-                                Text(text = "Expense")
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardOptions.Default.keyboardType
-                            ),
-                            keyboardActions = KeyboardActions(onDone = {})
-                        )
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Button(
-                                modifier = Modifier
-                                    .weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                                onClick = onCloseBottomSheet
-                            ) {
-                                Text(text = "Cancel")
-                            }
-                            Button(
-                                modifier = Modifier
-                                    .weight(1f),
-                                onClick = onAddTransaction
-                            ) {
-                                Text(text = "Submit")
-                            }
-                        }
-                    }
-                }
             }
         },
         bottomBar = {
@@ -424,23 +347,17 @@ private fun PreviewHomeContent() {
             sheetState = rememberModalBottomSheetState(),
             showBottomSheet = false,
             selected = HomeContentType.HomeContent,
+            selectedGoalPeriod = "",
+            onSelectPeriod = {},
+            goalPeriodList = listOf(),
             successGoalList = listOf(),
             failGoalList = listOf(),
             onSelectContent = {},
-            onAddGoal = {},
+            openAddGoalSheet = {},
             onGoto = {},
-            expand = false,
-            onExpandChange = {},
-            transactionSuccess = false,
-            onCloseBottomSheet = {},
-            onAddTransaction = {},
-            transactionName = "",
-            onTransactionNameChange = {},
-            transactionRemark = "",
-            onTransactionRemarkChange = {},
-            transactionExpense = "",
-            onTransactionExpenseChange = {},
-            onClear = {}
+            openAddTransactionSheet = {},
+            transactionList = listOf(),
+            onClickGoal = {}
         )
     }
 }

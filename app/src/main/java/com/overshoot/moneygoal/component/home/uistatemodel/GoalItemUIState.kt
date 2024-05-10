@@ -5,5 +5,6 @@ data class GoalItemUIState(
     val name: String,
     val isSuccess: Boolean,
     val target: Double,
-    val objective: String
+    val objective: String,
+    val period: String
 )

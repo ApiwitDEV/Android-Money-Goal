@@ -6,8 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.overshoot.moneygoal.component.dashboard.DashboardScreen
 import com.overshoot.moneygoal.component.home.ui.HomeScreen
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
+import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,16 +15,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NavigationHost(
-    goalViewModel: GoalViewModel,
-    transactionViewModel: TransactionViewModel
+    homeGoalDetailViewModel: HomeGoalDetailViewModel,
+    homeTransactionViewModel: HomeTransactionViewModel
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = MainNavigationRoute.HomeScreen.name) {
 
         composable(route = MainNavigationRoute.HomeScreen.name) {
             HomeScreen(
-                goalViewModel = goalViewModel,
-                transactionViewModel = transactionViewModel,
+                homeGoalDetailViewModel = homeGoalDetailViewModel,
+                homeTransactionViewModel = homeTransactionViewModel,
                 onGoto = {
                     CoroutineScope(context = Dispatchers.Main).launch {
                         delay(200)

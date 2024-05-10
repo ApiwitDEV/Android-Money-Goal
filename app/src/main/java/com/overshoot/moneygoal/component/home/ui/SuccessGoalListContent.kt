@@ -1,16 +1,21 @@
 package com.overshoot.moneygoal.component.home.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,8 +25,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +44,9 @@ import com.overshoot.moneygoal.theme.MoneyGoalTheme
 @Composable
 fun SuccessGoalListContent(
     modifier: Modifier = Modifier,
-    successGoalList: List<GoalItemUIState>
+    openGoalSheet: () -> Unit,
+    successGoalList: List<GoalItemUIState>,
+    onClick: (Int) -> Unit
 ) {
     Card(
         modifier = modifier
@@ -78,19 +90,19 @@ fun SuccessGoalListContent(
                     ) {
                         Box(modifier = Modifier.padding(4.dp)) {
                             Text(
-                                text = "8",
+                                text = "1",
                                 fontSize = 15.sp
                             )
                         }
                     }
                 }
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = openGoalSheet) {
                     Text(text = "Add Goal")
                 }
             }
             LazyColumn {
                 itemsIndexed(successGoalList) { index, item ->
-                    GoalItem(item = item)
+                    GoalItem(item = item, onClick)
 //                if (index != successGoalList.size - 1) {
 //                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 //                }
@@ -101,8 +113,14 @@ fun SuccessGoalListContent(
 }
 
 @Composable
-private fun GoalItem(item: GoalItemUIState) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+private fun GoalItem(item: GoalItemUIState, onClick: (Int) -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .clickable {
+                onClick(item.id)
+            }
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -142,6 +160,6 @@ private fun GoalItem(item: GoalItemUIState) {
 @Preview
 fun SuccessGoalListContentPreview() {
     MoneyGoalTheme {
-        SuccessGoalListContent(successGoalList = listOf())
+        SuccessGoalListContent(openGoalSheet = {},successGoalList = listOf(), onClick = {})
     }
 }

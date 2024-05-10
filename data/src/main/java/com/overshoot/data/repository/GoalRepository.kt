@@ -6,7 +6,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface GoalRepository {
 
-    suspend fun addGoal(): ResultData<Unit>
+    suspend fun addGoal(
+        goalName: String,
+        goalObjective: String,
+        period: String,
+        targetValue: Double
+    ): ResultData<Unit>
 
     suspend fun getGoal(): Flow<List<GoalEntity>>
 

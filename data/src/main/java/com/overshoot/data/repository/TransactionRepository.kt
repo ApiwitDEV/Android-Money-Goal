@@ -6,9 +6,15 @@ import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
 
-    suspend fun addTransaction(): ResultData<TransactionEntity>
+    suspend fun addTransaction(
+        name: String,
+        categoryId: Int,
+        remark: String,
+        type: String,
+        value: Double
+    ): ResultData<Unit>
 
     suspend fun subscribe(): Flow<TransactionEntity>
-    suspend fun subscribe2(): Flow<TransactionEntity>
+    suspend fun subscribe2(): Flow<List<TransactionEntity>>
 
 }

@@ -5,8 +5,18 @@ import com.overshoot.data.repository.GoalRepository
 
 class AddGoalUseCase(private val currentGoalRepository: GoalRepository) {
 
-    suspend fun addGoal(): ResultData<Unit> {
-        return currentGoalRepository.addGoal()
+    suspend fun addGoal(
+        goalName: String,
+        goalObjective: String,
+        period: String,
+        targetValue: Double
+    ): ResultData<Unit> {
+        return currentGoalRepository.addGoal(
+            goalName = goalName,
+            goalObjective = goalObjective,
+            period = period,
+            targetValue = targetValue
+        )
     }
 
 }

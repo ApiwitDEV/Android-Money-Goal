@@ -23,9 +23,9 @@ open class BaseViewModel: ViewModel() {
     protected fun <T: Any, R: Any> executeUseCase(
         mapToUIState: (T) -> R,
         action: suspend () -> ResultData<T>,
-        onSuccess: (R) -> Unit,
-        onFailure: (String) -> Unit,
-        onConnectingNotAvailable: () -> Unit
+        onSuccess: (R) -> Unit = {},
+        onFailure: (String) -> Unit = {},
+        onConnectingNotAvailable: () -> Unit = {}
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true

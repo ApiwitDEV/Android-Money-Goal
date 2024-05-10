@@ -11,12 +11,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -27,8 +30,8 @@ import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.Connectivity
 import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.GoalViewModel
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.TransactionViewModel
+import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
+import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -39,8 +42,8 @@ class MainActivity : ComponentActivity() {
 
     private val notificationViewModel by viewModel<NotificationViewModel>()
 
-    private val goalViewModel by viewModel<GoalViewModel>()
-    private val transactionViewModel by viewModel<TransactionViewModel>()
+    private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
+    private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
 
     private val appStateHolder = AppStateHolder.getInstant()
     
@@ -105,8 +108,8 @@ class MainActivity : ComponentActivity() {
             MoneyGoalTheme {
                 //A surface container using the 'background' color from the theme
                 NavigationHost(
-                    goalViewModel = goalViewModel,
-                    transactionViewModel = transactionViewModel
+                    homeGoalDetailViewModel = homeGoalDetailViewModel,
+                    homeTransactionViewModel = homeTransactionViewModel
                 )
 
                 val sheetState = rememberModalBottomSheetState()
@@ -131,6 +134,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         Text(text = "No Internet")
+                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
                 }
 

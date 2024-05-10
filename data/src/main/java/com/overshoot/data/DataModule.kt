@@ -23,6 +23,6 @@ val dataModule = module {
         GoalRepositoryImpl(GoalDatabase.getDatabase(androidContext()).goalDao())
     }
     single<TransactionRepository> {
-        TransactionRepositoryImpl(get())
+        TransactionRepositoryImpl(get(), GoalDatabase.getDatabase(androidContext()).transactionDao())
     }
 }

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 data class TransactionEntity(
     @ColumnInfo
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
     @ColumnInfo
     val name: String?,
     @ColumnInfo

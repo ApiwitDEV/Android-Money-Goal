@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Money Goal</string>
+
+    <string name="notification_chanel_name">channel_name</string>
+    <string name="notification_chanel_description"> description </string>
+
+</resources>

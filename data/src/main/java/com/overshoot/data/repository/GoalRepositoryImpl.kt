@@ -13,17 +13,22 @@ import java.text.SimpleDateFormat
 
 class GoalRepositoryImpl(private val goalDao: GoalDao): BaseRepository(), GoalRepository {
 
-    override suspend fun addGoal(): ResultData<Unit> {
+    override suspend fun addGoal(
+        goalName: String,
+        goalObjective: String,
+        period: String,
+        targetValue: Double
+    ): ResultData<Unit> {
         return callDB {
             val time = Calendar.getInstance().time
             val goal = GoalEntity(
-                name = "",
+                name = goalName,
                 description = "",
                 createAt = SimpleDateFormat("yyyy-MM-dd HH:mm").format(time),
                 updateAt = SimpleDateFormat("yyyy-MM-dd HH:mm").format(time),
-                objective = "limit",
-                period = "mounthly",
-                target = 100.0,
+                objective = goalObjective,
+                period = period,
+                target = targetValue,
                 cost = 10.0,
                 income = 20.0
             )

@@ -7,7 +7,9 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.overshoot.data.datasource.local.goal.GoalDao
 import com.overshoot.data.datasource.local.goal.GoalEntity
+import com.overshoot.data.datasource.local.transaction.CategoryDao
 import com.overshoot.data.datasource.local.transaction.CategoryEntity
+import com.overshoot.data.datasource.local.transaction.TransactionDao
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +23,8 @@ import kotlinx.coroutines.launch
 abstract class GoalDatabase : RoomDatabase() {
 
     abstract fun goalDao(): GoalDao
+    abstract fun transactionDao(): TransactionDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object {
         @Volatile
@@ -39,7 +43,7 @@ abstract class GoalDatabase : RoomDatabase() {
                                 super.onCreate(db)
                                 INSTANCE?.let {
                                     CoroutineScope(Dispatchers.IO).launch {
-
+                                        //INSTANCE?.categoryDao()?.addCategory()
                                     }
                                 }
                             }
