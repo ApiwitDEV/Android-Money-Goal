@@ -24,7 +24,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +43,7 @@ import com.overshoot.moneygoal.AppStateHolder
 import com.overshoot.moneygoal.R
 import com.overshoot.moneygoal.common.UIState
 import com.overshoot.moneygoal.common.ui.LoadingDialog
+import com.overshoot.moneygoal.component.account.AccountContent
 import com.overshoot.moneygoal.component.home.HomeContentType
 import com.overshoot.moneygoal.component.home.stateholder.GoalListStateHolder
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
@@ -51,7 +51,8 @@ import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDeta
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalPeriodItemUIState
-import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
+import com.overshoot.moneygoal.component.scanbill.ScanContent
+import com.overshoot.moneygoal.component.transactionhistory.TransactionHistoryContent
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,10 +71,6 @@ fun HomeScreen(
     var isLoading by remember { mutableStateOf(false) }
     var sheetType by remember { mutableStateOf<SheetType?>(null) }
 
-    LaunchedEffect(key1 = Unit) {
-        homeTransactionViewModel.subscribe()
-    }
-
     val goalListStateHolder = remember { GoalListStateHolder() }
 
     LaunchedEffect(key1 = null) {
@@ -89,10 +86,6 @@ fun HomeScreen(
     LaunchedEffect(key1 = null) {
         homeGoalDetailViewModel.observeGoalPeriodList()
         homeGoalDetailViewModel.observeAllGoal()
-    }
-
-    if (homeTransactionViewModel.isLoading.value || homeGoalDetailViewModel.isLoading.value) {
-        LoadingDialog()
     }
 
     HomeContent(
@@ -121,13 +114,13 @@ fun HomeScreen(
             onGoto()
         },
         openAddTransactionSheet = {
+            homeTransactionViewModel.getAllCategory()
             sheetType = SheetType.AddTransactionSheet
             showBottomSheet.value = true
             scope.launch {
                 sheetState.show()
             }
         },
-        transactionList = homeTransactionViewModel.transaction.value,
         onClickGoal = {
             goalListStateHolder.onClickGoal(it)
         }
@@ -150,6 +143,7 @@ fun HomeScreen(
             SheetType.AddTransactionSheet -> {
                 AddTransactionBottomSheet(
                     sheetState = sheetState,
+                    categoryList = homeTransactionViewModel.category,
                     onCloseBottomSheet = {
                         scope.launch {
                             sheetState.hide()
@@ -183,6 +177,10 @@ fun HomeScreen(
         }
     }
 
+    if (homeTransactionViewModel.isLoading.value || homeGoalDetailViewModel.isLoading.value) {
+        LoadingDialog()
+    }
+
     if (isLoading) {
         LoadingDialog()
     }
@@ -205,7 +203,6 @@ private fun HomeContent(
     openAddGoalSheet: () -> Unit,
     onGoto: () -> Unit,
     openAddTransactionSheet: () -> Unit,
-    transactionList: List<TransactionUIState>,
     onClickGoal: (Int) -> Unit
 ) {
     Scaffold(
@@ -263,11 +260,12 @@ private fun HomeContent(
                 ScanContent()
             }
             AnimatedVisibility(
+                modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
                 visible = selected == HomeContentType.TransactionHistoryContent,
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                TransactionHistoryContent(transactionList)
+                TransactionHistoryContent()
             }
             AnimatedVisibility(
                 visible = selected == HomeContentType.AccountContent,
@@ -356,7 +354,6 @@ private fun PreviewHomeContent() {
             openAddGoalSheet = {},
             onGoto = {},
             openAddTransactionSheet = {},
-            transactionList = listOf(),
             onClickGoal = {}
         )
     }

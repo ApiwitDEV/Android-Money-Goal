@@ -29,7 +29,7 @@ class TransactionRepositoryImpl(
                     name = name,
                     createAt = SimpleDateFormat("yyyy-MM-dd HH:mm").format(time),
                     updateAt = SimpleDateFormat("yyyy-MM-dd HH:mm").format(time),
-//                categoryId = listOf(),
+                    categoryId = categoryId,
                     moneyAmount = value,
                     type = type,
                     remark = remark
@@ -46,7 +46,7 @@ class TransactionRepositoryImpl(
         }
     }
 
-    override suspend fun subscribe2(): Flow<List<TransactionEntity>> {
+    override fun subscribe2(): Flow<List<TransactionEntity>> {
         return transactionDao.getTransaction()
 //        return flow {
 //            if (!isSubscribe) {

@@ -1,7 +1,7 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
-import com.overshoot.domain.GetGoalUseCase
-import com.overshoot.domain.AddGoalUseCase
+import com.overshoot.domain.usecase.GetGoalUseCase
+import com.overshoot.domain.usecase.AddGoalUseCase
 import com.overshoot.moneygoal.BaseViewModel
 import com.overshoot.moneygoal.common.Period
 import com.overshoot.moneygoal.common.UIState

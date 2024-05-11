@@ -1,19 +1,19 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import com.overshoot.domain.AddTransactionUseCase
+import androidx.compose.runtime.mutableStateListOf
+import com.overshoot.data.repository.CategoryRepository
+import com.overshoot.domain.usecase.AddTransactionUseCase
 import com.overshoot.moneygoal.BaseViewModel
-import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
+import com.overshoot.moneygoal.component.home.uistatemodel.CategoryUIState
 import com.overshoot.moneygoal.component.home.upstreamdatamodel.AddTransactionData
-import kotlinx.coroutines.flow.catch
 
 class HomeTransactionViewModel(
-    private val addTransactionUseCase: AddTransactionUseCase
+    private val addTransactionUseCase: AddTransactionUseCase,
+    private val categoryRepository: CategoryRepository
 ): BaseViewModel() {
 
-    private val _transaction = mutableStateOf<List<TransactionUIState>>(listOf())
-    val transaction: State<List<TransactionUIState>> = _transaction
+    private val _categoryList = mutableStateListOf<CategoryUIState>()
+    val category: List<CategoryUIState> = _categoryList
 
     fun addTransaction(transaction: AddTransactionData) {
         executeUseCase(
@@ -30,28 +30,25 @@ class HomeTransactionViewModel(
         )
     }
 
-    fun subscribe() {
-        observeStreamingData(
+    fun getAllCategory() {
+        executeUseCase(
             action = {
-                addTransactionUseCase.subscribe2()
-                    .catch {
-                        it.message
-                    }
+                categoryRepository.getAllCategory()
             },
             mapToUIState = {
-                it.map { item ->
-                    TransactionUIState(
-                        id = item.id,
-                        name = item.name,
-                        value = item.moneyAmount,
-                        remark = item.remark,
-                        goalId = item.id,
-                        type = item.type
+                it.map { category ->
+                    CategoryUIState(
+                        id = category.id,
+                        name = category.name?:""
                     )
                 }
             },
-            onDataReceived = {
-                _transaction.value = it
+            onSuccess = {
+                _categoryList.clear()
+                _categoryList.addAll(it)
+            },
+            onFailure = {
+
             }
         )
     }

@@ -16,7 +16,7 @@ class FakeTransactionDataSource: StreamingDataSource<TransactionEntity> {
                     createAt = "",
                     updateAt = "",
                     moneyAmount = 30.0,
-//                    categoryId = listOf(),
+                    categoryId = 0,
                     remark = ""
                     )
             )

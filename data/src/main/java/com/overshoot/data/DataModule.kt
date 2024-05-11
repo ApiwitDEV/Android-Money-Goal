@@ -5,6 +5,7 @@ import com.overshoot.data.datasource.local.transaction.FakeTransactionDataSource
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
 import com.overshoot.data.datasource.remote.network.Connectivity
+import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.data.repository.GoalRepository
 import com.overshoot.data.repository.GoalRepositoryImpl
 import com.overshoot.data.repository.TransactionRepository
@@ -24,5 +25,8 @@ val dataModule = module {
     }
     single<TransactionRepository> {
         TransactionRepositoryImpl(get(), GoalDatabase.getDatabase(androidContext()).transactionDao())
+    }
+    single {
+        CategoryRepository(GoalDatabase.getDatabase(androidContext()).categoryDao())
     }
 }

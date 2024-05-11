@@ -19,8 +19,8 @@ data class TransactionEntity(
     val updateAt: String?,
     @ColumnInfo("money_amount")
     val moneyAmount: Double?,
-//    @ColumnInfo("category_id")
-//    val categoryId: List<Int>?,
+    @ColumnInfo("category_id")
+    val categoryId: Int?,
     @ColumnInfo
     val remark: String?
 )

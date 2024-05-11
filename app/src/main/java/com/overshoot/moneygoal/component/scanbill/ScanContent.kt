@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.component.home.ui
+package com.overshoot.moneygoal.component.scanbill
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

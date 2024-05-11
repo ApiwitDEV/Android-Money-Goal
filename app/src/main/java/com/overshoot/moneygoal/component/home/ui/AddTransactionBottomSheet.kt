@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.overshoot.moneygoal.R
+import com.overshoot.moneygoal.component.home.uistatemodel.CategoryUIState
 import com.overshoot.moneygoal.component.home.upstreamdatamodel.AddTransactionData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,6 +50,7 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun AddTransactionBottomSheet(
     sheetState: SheetState,
+    categoryList: List<CategoryUIState>,
     onCloseBottomSheet: () -> Unit,
     onAddTransaction: (AddTransactionData) -> Unit
 ) {
@@ -55,6 +58,8 @@ internal fun AddTransactionBottomSheet(
     var transactionName by remember { mutableStateOf("") }
     var transactionRemark by remember { mutableStateOf("") }
     var transactionValue by remember { mutableStateOf("") }
+    var selectedCategoryId by remember { mutableIntStateOf(0) }
+    var selectedCategoryName by remember { mutableStateOf("") }
     var selected by remember { mutableStateOf("Expense") }
     var buttonExpand by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -72,15 +77,22 @@ internal fun AddTransactionBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(modifier = Modifier.clickable { expand = !expand }) {
+                Row(modifier = Modifier.clickable { expand = true }) {
                     Icon(painter = painterResource(id = R.drawable.baseline_add_24), contentDescription = null)
-                    Text(text = "Category")
+                    Text(text = selectedCategoryName.ifEmpty { "Category" })
                     DropdownMenu(expanded = expand, onDismissRequest = {
-                        expand = !expand
+                        expand = false
                     }) {
-                        DropdownMenuItem(text = { Text(text = "A") }, onClick = { /*TODO*/ })
-                        DropdownMenuItem(text = { Text(text = "B") }, onClick = { /*TODO*/ })
-                        DropdownMenuItem(text = { Text(text = "C") }, onClick = { /*TODO*/ })
+                        categoryList.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(text = "id : ${category.id} name : ${category.name}") },
+                                onClick = {
+                                    selectedCategoryId = category.id
+                                    selectedCategoryName = category.name
+                                    expand = false
+                                }
+                            )
+                        }
                     }
                 }
                 Text(
@@ -169,7 +181,7 @@ internal fun AddTransactionBottomSheet(
                         onAddTransaction(
                             AddTransactionData(
                                 name = transactionName,
-                                categoryId = 1,
+                                categoryId = selectedCategoryId,
                                 remark = transactionRemark,
                                 type = selected,
                                 value = transactionValue.toDouble()

@@ -43,7 +43,24 @@ abstract class GoalDatabase : RoomDatabase() {
                                 super.onCreate(db)
                                 INSTANCE?.let {
                                     CoroutineScope(Dispatchers.IO).launch {
-                                        //INSTANCE?.categoryDao()?.addCategory()
+                                        INSTANCE?.categoryDao()?.addCategory(
+                                            CategoryEntity(
+                                            id = 0,
+                                            name = "Food"
+                                            )
+                                        )
+                                        INSTANCE?.categoryDao()?.addCategory(CategoryEntity(
+                                            id = 0,
+                                            name = "Salary"
+                                        ))
+                                        INSTANCE?.categoryDao()?.addCategory(CategoryEntity(
+                                            id = 0,
+                                            name = "Dept"
+                                        ))
+                                        INSTANCE?.categoryDao()?.addCategory(CategoryEntity(
+                                            id = 0,
+                                            name = "Subscription"
+                                        ))
                                     }
                                 }
                             }

@@ -15,6 +15,6 @@ interface TransactionRepository {
     ): ResultData<Unit>
 
     suspend fun subscribe(): Flow<TransactionEntity>
-    suspend fun subscribe2(): Flow<List<TransactionEntity>>
+    fun subscribe2(): Flow<List<TransactionEntity>>
 
 }

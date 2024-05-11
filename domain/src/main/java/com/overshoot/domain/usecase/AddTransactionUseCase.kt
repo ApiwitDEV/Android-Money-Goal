@@ -1,7 +1,8 @@
-package com.overshoot.domain
+package com.overshoot.domain.usecase
 
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
+import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.data.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 

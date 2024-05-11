@@ -1,11 +1,12 @@
-package com.overshoot.moneygoal.component.home.uistatemodel
+package com.overshoot.domain.model
 
-data class TransactionUIState(
+data class TransactionResult(
     val id: Int,
     val name: String?,
     val type: String?,
     val value: Double?,
     val remark: String?,
     val goalId: Int?,
-    val category: String?
+    val categoryId: Int,
+    val categoryName: String?
 )

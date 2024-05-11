@@ -4,4 +4,6 @@
     <string name="notification_chanel_name">channel_name</string>
     <string name="notification_chanel_description"> description </string>
 
+    <string name="money_unit">bath</string>
+
 </resources>
