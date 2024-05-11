@@ -152,6 +152,11 @@ fun HomeScreen(
                         sheetType = null
                     },
                     onAddTransaction = {
+                        scope.launch {
+                            sheetState.hide()
+                        }
+                        showBottomSheet.value = false
+                        sheetType = null
                         homeTransactionViewModel.addTransaction(transaction = it)
                     }
                 )

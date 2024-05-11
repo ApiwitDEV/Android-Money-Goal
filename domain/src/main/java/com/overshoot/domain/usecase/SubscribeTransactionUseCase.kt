@@ -27,7 +27,7 @@ class SubscribeTransactionUseCase(
                         categoryId = transaction.categoryId?:0,
                         categoryName = categoryList.find { category ->
                             category.id == transaction.categoryId
-                        }.toString()
+                        }?.name.toString()
                     )
                 }
             }

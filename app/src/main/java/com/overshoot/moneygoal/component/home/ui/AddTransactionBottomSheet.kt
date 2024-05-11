@@ -134,7 +134,7 @@ internal fun AddTransactionBottomSheet(
                     transactionName = it
                 },
                 placeholder = {
-                    Text(text = "Transaction Name")
+                    Text(text = "Transaction Name*")
                 },
                 keyboardActions = KeyboardActions(onNext = {})
             )
@@ -146,7 +146,7 @@ internal fun AddTransactionBottomSheet(
                     transactionValue = it
                 },
                 placeholder = {
-                    Text(text = selected)
+                    Text(text = "$selected*")
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Decimal
@@ -178,15 +178,25 @@ internal fun AddTransactionBottomSheet(
                     modifier = Modifier
                         .weight(1f),
                     onClick = {
-                        onAddTransaction(
-                            AddTransactionData(
-                                name = transactionName,
-                                categoryId = selectedCategoryId,
-                                remark = transactionRemark,
-                                type = selected,
-                                value = transactionValue.toDouble()
+                        if (
+                            transactionName.isNotBlank() &&
+                            transactionValue.isNotBlank() &&
+                            selectedCategoryId != 0 &&
+                            selectedCategoryName.isNotBlank()
+                            ) {
+                            onAddTransaction(
+                                AddTransactionData(
+                                    name = transactionName,
+                                    categoryId = selectedCategoryId,
+                                    remark = transactionRemark,
+                                    type = selected,
+                                    value = transactionValue.toDouble()
+                                )
                             )
-                        )
+                        }
+                        else {
+
+                        }
                     }
                 ) {
                     Text(text = "Submit")

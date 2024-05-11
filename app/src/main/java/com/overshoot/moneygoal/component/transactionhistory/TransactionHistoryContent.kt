@@ -111,10 +111,16 @@ private fun TransactionItem(item: TransactionUIState) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = "category")
+                Text(text = item.category.toString())
                 Text(
                     text = "${item.type}",
                     color = if (item.type == "Income") Color.Green else Color.Red
+                )
+            }
+            if (!item.remark.isNullOrBlank()) {
+                Text(
+                    text = "* "+item.remark,
+                    color = Color.Gray
                 )
             }
         }
