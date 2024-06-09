@@ -4,7 +4,7 @@ import com.overshoot.data.datasource.local.GoalDatabase
 import com.overshoot.data.datasource.local.transaction.FakeTransactionDataSource
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
-import com.overshoot.data.datasource.remote.network.Connectivity
+import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.data.repository.GoalRepository
 import com.overshoot.data.repository.GoalRepositoryImpl
@@ -15,7 +15,7 @@ import org.koin.dsl.module
 
 val dataModule = module {
     single {
-        Connectivity(androidContext())
+        InternetConnectivity(androidContext())
     }
     single<StreamingDataSource<TransactionEntity>> {
         FakeTransactionDataSource()

@@ -1,11 +1,30 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.viewModelScope
 import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.domain.usecase.AddTransactionUseCase
 import com.overshoot.moneygoal.BaseViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.CategoryUIState
 import com.overshoot.moneygoal.component.home.upstreamdatamodel.AddTransactionData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectIndexed
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeTransactionViewModel(
     private val addTransactionUseCase: AddTransactionUseCase,
@@ -31,6 +50,33 @@ class HomeTransactionViewModel(
     }
 
     fun getAllCategory() {
+        viewModelScope.launch {
+            var x = 0
+            callbackFlow {
+                launch(Dispatchers.IO) {
+                    Log.d("pusher log", "execute x")
+                    delay(8000)
+                    send(5)
+                    Log.d("pusher log", "execute x complete")
+                }
+                launch(Dispatchers.IO) {
+                    Log.d("pusher log", "execute y")
+                    delay(10000)
+                    send(10)
+                    Log.d("pusher log", "execute y complete")
+                }
+                awaitClose {
+                    Log.d("pusher log", "awaitClose")
+                }
+            }.collectIndexed { index, item ->
+                    if (index == 0) {
+                        x = item
+                        Log.d("pusher log", "$item")
+                    } else {
+                        Log.d("pusher log", "$x , $item")
+                    }
+                }
+        }
         executeUseCase(
             action = {
                 categoryRepository.getAllCategory()

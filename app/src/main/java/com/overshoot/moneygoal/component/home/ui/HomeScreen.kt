@@ -39,7 +39,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.overshoot.moneygoal.AppStateHolder
 import com.overshoot.moneygoal.R
 import com.overshoot.moneygoal.common.UIState
 import com.overshoot.moneygoal.common.ui.LoadingDialog
@@ -67,7 +66,6 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val showBottomSheet = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val appStateHolder = AppStateHolder.getInstant()
     var isLoading by remember { mutableStateOf(false) }
     var sheetType by remember { mutableStateOf<SheetType?>(null) }
 

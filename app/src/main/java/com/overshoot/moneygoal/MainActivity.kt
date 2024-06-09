@@ -1,5 +1,6 @@
 package com.overshoot.moneygoal
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.pm.PackageManager
@@ -19,6 +20,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
@@ -27,25 +29,26 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
-import com.overshoot.data.datasource.remote.network.Connectivity
+import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
-    private val connectivity by inject<Connectivity>()
+    private val internetConnectivity by inject<InternetConnectivity>()
 
     private val notificationViewModel by viewModel<NotificationViewModel>()
 
     private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
     private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
 
-    private val appStateHolder = AppStateHolder.getInstant()
+//    private val appStateHolder = AppStateHolder.getInstance()
     
     private fun askNotificationPermission() {
         when {
@@ -83,10 +86,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("CoroutineCreationDuringComposition")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        connectivity.requestNetwork()
         askNotificationPermission()
         Firebase.messaging.subscribeToTopic("A")
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
@@ -112,31 +115,11 @@ class MainActivity : ComponentActivity() {
                     homeTransactionViewModel = homeTransactionViewModel
                 )
 
+                val scope = rememberCoroutineScope()
                 val sheetState = rememberModalBottomSheetState()
-
-                LaunchedEffect(key1 = null) {
-                    appStateHolder?.collectInternetState(
-                        state = connectivity.state,
-                        onInternetAvailable = {
-                            sheetState.show()
-                        },
-                        onNoInternet = {
-                            sheetState.hide()
-                        }
-                    )
-                }
-
-                if (appStateHolder?.isShowNoInternetDrawer?.value == false) {
-                    ModalBottomSheet(
-                        sheetState = sheetState,
-                        onDismissRequest = {
-                            appStateHolder.hideNoInternetState()
-                        }
-                    ) {
-                        Text(text = "No Internet")
-                        Spacer(modifier = Modifier.navigationBarsPadding())
-                    }
-                }
+                val appStateHolder = rememberAppState(
+                    internetState = internetConnectivity.state
+                )
 
                 if (notificationViewModel.showDialog.value == true) {
                     Dialog(onDismissRequest = {
@@ -148,6 +131,21 @@ class MainActivity : ComponentActivity() {
                                 Text(text = "sfdv")
                             }
                         }
+                    }
+                }
+
+                if (appStateHolder.isShowNoInternetDrawer.value == true) {
+                    ModalBottomSheet(
+                        sheetState = sheetState,
+                        onDismissRequest = {
+                            scope.launch {
+                                sheetState.hide()
+                                appStateHolder.setIsShowNoInternetDrawer(false)
+                            }
+                        }
+                    ) {
+                        Text(text = "No Internet")
+                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
                 }
             }

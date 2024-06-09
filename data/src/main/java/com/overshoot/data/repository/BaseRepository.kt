@@ -3,7 +3,7 @@ package com.overshoot.data.repository
 import com.overshoot.data.datasource.Failure
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.Success
-import com.overshoot.data.datasource.remote.network.Connectivity
+import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -15,7 +15,7 @@ import kotlin.coroutines.CoroutineContext
 
 open class BaseRepository {
 
-    private val connectivity by inject<Connectivity>(Connectivity::class.java)
+    private val internetConnectivity by inject<InternetConnectivity>(InternetConnectivity::class.java)
 
     suspend fun <T: Any> callDB(
         context: CoroutineContext = Dispatchers.IO,
@@ -35,7 +35,7 @@ open class BaseRepository {
     suspend fun <T: Any> callRestFulApi(
         action: suspend CoroutineScope.() -> T
     ): ResultData<T> {
-        return if (connectivity.isAvailable()) {
+        return if (internetConnectivity.isAvailable()) {
             try {
                 withTimeout(5000) {
                     Success(data = action())
