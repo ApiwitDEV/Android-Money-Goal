@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.navigation
+package com.overshoot.moneygoal.navigation.main
 
 enum class MainNavigationRoute {
 

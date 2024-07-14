@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.navigation
+package com.overshoot.moneygoal.navigation.main
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationHost(
     homeGoalDetailViewModel: HomeGoalDetailViewModel,
-    homeTransactionViewModel: HomeTransactionViewModel
+    homeTransactionViewModel: HomeTransactionViewModel,
+    onSignOut: () -> Unit
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = MainNavigationRoute.HomeScreen.name) {
@@ -30,7 +31,8 @@ fun NavigationHost(
                         delay(200)
                         navController.navigate(route = MainNavigationRoute.DashboardScreen.name)
                     }
-                }
+                },
+                onSignOut = onSignOut
             )
         }
 

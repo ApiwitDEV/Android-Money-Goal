@@ -59,7 +59,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     homeGoalDetailViewModel: HomeGoalDetailViewModel,
     homeTransactionViewModel: HomeTransactionViewModel,
-    onGoto: () -> Unit
+    onGoto: () -> Unit,
+    onSignOut: () -> Unit
 ) {
     val selected = remember { mutableStateOf(HomeContentType.HomeContent) }
     val sheetState = rememberModalBottomSheetState()
@@ -121,7 +122,8 @@ fun HomeScreen(
         },
         onClickGoal = {
             goalListStateHolder.onClickGoal(it)
-        }
+        },
+        onSignOut = onSignOut
     )
 
     LaunchedEffect(key1 = Unit) {
@@ -206,7 +208,8 @@ private fun HomeContent(
     openAddGoalSheet: () -> Unit,
     onGoto: () -> Unit,
     openAddTransactionSheet: () -> Unit,
-    onClickGoal: (Int) -> Unit
+    onClickGoal: (Int) -> Unit,
+    onSignOut: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier
@@ -275,7 +278,7 @@ private fun HomeContent(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                AccountContent()
+                AccountContent(signOut = onSignOut)
             }
         },
         bottomBar = {
@@ -357,7 +360,8 @@ private fun PreviewHomeContent() {
             openAddGoalSheet = {},
             onGoto = {},
             openAddTransactionSheet = {},
-            onClickGoal = {}
+            onClickGoal = {},
+            onSignOut = {}
         )
     }
 }

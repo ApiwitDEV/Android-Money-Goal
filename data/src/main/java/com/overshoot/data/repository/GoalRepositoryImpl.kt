@@ -2,12 +2,8 @@ package com.overshoot.data.repository
 
 import android.icu.util.Calendar
 import com.overshoot.data.datasource.ResultData
-import com.overshoot.data.datasource.Success
 import com.overshoot.data.datasource.local.goal.GoalDao
 import com.overshoot.data.datasource.local.goal.GoalEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 

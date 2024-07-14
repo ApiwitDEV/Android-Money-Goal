@@ -1,5 +1,6 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
+import com.overshoot.data.repository.GoalRepository
 import com.overshoot.domain.usecase.GetGoalUseCase
 import com.overshoot.domain.usecase.AddGoalUseCase
 import com.overshoot.moneygoal.BaseViewModel
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 class HomeGoalDetailViewModel(
     private val getGoalUseCase: GetGoalUseCase,
-    private val addGoalUseCase: AddGoalUseCase
+    private val addGoalUseCase: AddGoalUseCase,
+    private val goalRepository: GoalRepository
 ): BaseViewModel() {
 
     init {

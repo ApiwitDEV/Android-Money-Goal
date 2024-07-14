@@ -60,5 +60,7 @@ dependencies {
 
 //    kapt("androidx.room:room-compiler:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
+    
+    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
 
 }

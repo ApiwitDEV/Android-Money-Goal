@@ -3,6 +3,7 @@ package com.overshoot.moneygoal
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -19,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
@@ -27,13 +27,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
-import com.overshoot.moneygoal.navigation.NavigationHost
+import com.overshoot.moneygoal.navigation.main.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
+import com.overshoot.moneygoal.component.authentication.AuthenticationActivity
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -47,6 +50,8 @@ class MainActivity : ComponentActivity() {
 
     private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
     private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
+
+    private lateinit var auth: FirebaseAuth
 
 //    private val appStateHolder = AppStateHolder.getInstance()
     
@@ -90,6 +95,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
         askNotificationPermission()
         Firebase.messaging.subscribeToTopic("A")
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
@@ -112,7 +118,12 @@ class MainActivity : ComponentActivity() {
                 //A surface container using the 'background' color from the theme
                 NavigationHost(
                     homeGoalDetailViewModel = homeGoalDetailViewModel,
-                    homeTransactionViewModel = homeTransactionViewModel
+                    homeTransactionViewModel = homeTransactionViewModel,
+                    onSignOut = {
+                        auth.signOut()
+                        goToLoginActivity()
+                        finish()
+                    }
                 )
 
                 val scope = rememberCoroutineScope()
@@ -154,6 +165,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            goToLoginActivity()
+        }
     }
 
     override fun onResume() {
@@ -189,6 +204,13 @@ class MainActivity : ComponentActivity() {
             // or other notification behaviors after this.
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(mChannel)
+        }
+    }
+
+    private fun goToLoginActivity() {
+        Intent(baseContext, AuthenticationActivity::class.java).also {
+            startActivity(it)
+            finish()
         }
     }
 }

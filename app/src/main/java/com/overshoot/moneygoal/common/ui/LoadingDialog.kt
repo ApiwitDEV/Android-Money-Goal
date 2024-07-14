@@ -2,6 +2,8 @@ package com.overshoot.moneygoal.common.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -19,19 +21,27 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoadingDialog() {
     Box(
-        modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.5f)),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.25f)),
         contentAlignment = Alignment.Center
     ) {
-        Card(
-            modifier = Modifier.width(120.dp).height(120.dp),
-            onClick = { /*TODO*/ }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CircularProgressIndicator(
                 modifier = Modifier.size(80.dp),
                 color = MaterialTheme.colorScheme.secondary,
                 trackColor = MaterialTheme.colorScheme.surfaceVariant,
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Loading")
         }
+//        Card(
+//            modifier = Modifier.width(120.dp).height(120.dp),
+//            onClick = { /*TODO*/ }
+//        ) {
+//
+//        }
     }
 }
