@@ -1,6 +1,8 @@
 package com.overshoot.data
 
 import com.overshoot.data.datasource.local.GoalDatabase
+import com.overshoot.data.datasource.local.hardware.SimCard
+import com.overshoot.data.datasource.local.hardware.SimCardImpl
 import com.overshoot.data.datasource.local.transaction.FakeTransactionDataSource
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
@@ -23,6 +25,7 @@ val dataModule = module {
     single {
         InternetConnectivity(androidContext())
     }
+    single<SimCard> { SimCardImpl() }
     single<AuthenticationService> { AuthenticationServiceImpl() }
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(
@@ -36,8 +39,8 @@ val dataModule = module {
                 override fun collectUserInfo() {
                     println()
                 }
-
-            }
+            },
+            get()
         )
     }
     single<StreamingDataSource<TransactionEntity>> {

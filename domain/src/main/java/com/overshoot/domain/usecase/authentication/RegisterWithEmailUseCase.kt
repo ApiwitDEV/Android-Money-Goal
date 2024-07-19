@@ -7,25 +7,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 
-class RegisterWithEmailUseCase(
-    private val coroutineScope: CoroutineScope,
-    private val authenticationRepository: AuthenticationRepository
-) {
+class RegisterWithEmailUseCase(private val authenticationRepository: AuthenticationRepository) {
 
-    suspend operator fun invoke(
+    operator fun invoke(
         firstName: String,
         lastName: String,
         email: String,
         password: String
     ): Flow<ResultData<AuthResponse>> {
-        return coroutineScope.async {
-            authenticationRepository.registerWithEmail(
-                firstName,
-                lastName,
-                email,
-                password
-            )
-        }.await()
+        return authenticationRepository.registerWithEmail(
+            firstName,
+            lastName,
+            email,
+            password
+        )
     }
 
 }

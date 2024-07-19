@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {
 
-    suspend fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>>
+    fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>>
 
     fun registerWithEmail(
         firstName: String,
@@ -16,5 +16,9 @@ interface AuthenticationRepository {
     ): Flow<ResultData<AuthResponse>>
 
     fun logout()
+
+    fun requestVerificationCode(): Flow<ResultData<Long>>
+
+    fun verifyCode(verificationCode: String): Flow<ResultData<Int>>
 
 }

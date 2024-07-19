@@ -8,7 +8,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 @Composable

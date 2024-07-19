@@ -24,4 +24,8 @@ interface AuthenticationService {
 
     fun logout()
 
+    fun sendVerificationCode(phoneNumber: String, onSuccess: (Long) -> Unit, onFailure: (Exception) -> Unit)
+
+    fun signInWithPhoneNumber(code: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit)
+
 }

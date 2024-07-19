@@ -3,6 +3,7 @@ package com.overshoot.data.repository
 import com.overshoot.data.datasource.Failure
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.Success
+import com.overshoot.data.datasource.local.hardware.SimCard
 import com.overshoot.data.datasource.local.user.UserInfoDao
 import com.overshoot.data.datasource.remote.RestfulApiService
 import com.overshoot.data.datasource.remote.authentication.AuthenticationService
@@ -14,10 +15,11 @@ import kotlinx.coroutines.flow.callbackFlow
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
     private val userInfoDao: UserInfoDao,
-    private val restfulApiService: RestfulApiService
+    private val restfulApiService: RestfulApiService,
+    private val simCard: SimCard
 ): BaseRepository(), AuthenticationRepository {
 
-    override suspend fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>> {
+    override fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>> {
         return callbackFlow {
             authenticationService.loginWithEmail(
                 email = email,
@@ -31,7 +33,7 @@ class AuthenticationRepositoryImpl(
                 }
             )
             awaitClose {
-                channel.close()
+                close()
             }
         }
     }
@@ -55,7 +57,7 @@ class AuthenticationRepositoryImpl(
                 }
             )
             awaitClose {
-                channel.close()
+                close()
             }
         }
     }
@@ -64,5 +66,38 @@ class AuthenticationRepositoryImpl(
         authenticationService.logout()
     }
 
+    override fun requestVerificationCode(): Flow<ResultData<Long>> {
+        return callbackFlow {
+            authenticationService.sendVerificationCode(
+                phoneNumber = simCard.getPhoneNumber(),
+                onSuccess = {
+                    trySend(Success(it))
+                },
+                onFailure = {
+                   trySend(Failure(message = it.message?:""))
+                }
+            )
+            awaitClose {
+                close()
+            }
+        }
+    }
+
+    override fun verifyCode(verificationCode: String): Flow<ResultData<Int>> {
+        return callbackFlow {
+            authenticationService.signInWithPhoneNumber(
+                code = verificationCode,
+                onSuccess = {
+                    trySend(Success(-1))
+                },
+                onFailure = {
+                    trySend(Failure(message = it.message?:""))
+                }
+            )
+            awaitClose {
+                close()
+            }
+        }
+    }
 
 }

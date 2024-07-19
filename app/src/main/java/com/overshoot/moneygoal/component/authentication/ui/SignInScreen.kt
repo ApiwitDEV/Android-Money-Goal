@@ -1,5 +1,6 @@
 package com.overshoot.moneygoal.component.authentication.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,14 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.overshoot.moneygoal.component.authentication.stateholder.AuthenticationViewModel
+import com.overshoot.moneygoal.navigation.authentication.AuthenticationRoute
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 
 @Composable
 fun SignInScreen(
-    onSignUpClicked: () -> Unit,
-    onSignIn: (String, String) -> Unit
+    authenticationViewModel: AuthenticationViewModel,
+    onNavigateBack: () -> Unit
 ) {
     var email by remember {
         mutableStateOf("")
@@ -41,13 +44,23 @@ fun SignInScreen(
     var password by remember {
         mutableStateOf("")
     }
+    BackHandler {
+        onNavigateBack()
+    }
     LoginContent(
         email = email,
         password = password,
-        onSignUpClicked = onSignUpClicked,
-        onSignInClicked = onSignIn,
+        onSignUpClicked = {
+            authenticationViewModel.navigateTo(AuthenticationRoute.Register)
+        },
+        onSignInClicked = {
+            authenticationViewModel.loginWithEmail(email, password)
+        },
         onEmailChange = { email = it },
-        onPasswordChange = { password = it }
+        onPasswordChange = { password = it },
+        onRequestVerificationCode = {
+            authenticationViewModel.requestVerificationCode()
+        }
     )
 }
 
@@ -56,9 +69,10 @@ private fun LoginContent(
     email: String,
     password: String,
     onSignUpClicked: () -> Unit = { },
-    onSignInClicked: (String, String) -> Unit = { _, _ ->},
+    onSignInClicked: () -> Unit = { },
     onEmailChange: (String) -> Unit = {_ ->},
-    onPasswordChange: (String) -> Unit = {_ ->}
+    onPasswordChange: (String) -> Unit = {_ ->},
+    onRequestVerificationCode: () -> Unit = { }
 ) {
     Scaffold {
         Column(
@@ -101,7 +115,7 @@ private fun LoginContent(
                 Spacer(modifier = Modifier.width(16.dp))
                 Button(
                     enabled = email.isNotBlank() && password.isNotBlank(),
-                    onClick = { onSignInClicked(email, password) }
+                    onClick = onSignInClicked
                 ) {
                     Text(
                         text = "Sign in",
@@ -111,10 +125,19 @@ private fun LoginContent(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { onSignInClicked(email, password) }
+                onClick = {  }
             ) {
                 Text(
                     text = "Sign in with Google",
+                    fontSize = 16.sp
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onRequestVerificationCode
+            ) {
+                Text(
+                    text = "Sign in with Phone",
                     fontSize = 16.sp
                 )
             }
