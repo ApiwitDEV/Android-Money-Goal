@@ -1,4 +1,4 @@
-package com.overshoot.domain.usecase
+package com.overshoot.domain.usecase.transaction
 
 import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.data.repository.TransactionRepository

@@ -1,4 +1,4 @@
-package com.overshoot.domain.usecase
+package com.overshoot.domain.usecase.goal
 
 import com.overshoot.data.datasource.local.goal.GoalEntity
 import com.overshoot.data.repository.GoalRepository

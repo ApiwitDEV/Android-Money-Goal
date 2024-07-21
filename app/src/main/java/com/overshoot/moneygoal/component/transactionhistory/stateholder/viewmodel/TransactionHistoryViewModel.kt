@@ -3,7 +3,7 @@ package com.overshoot.moneygoal.component.transactionhistory.stateholder.viewmod
 import androidx.compose.runtime.IntState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
-import com.overshoot.domain.usecase.SubscribeTransactionUseCase
+import com.overshoot.domain.usecase.transaction.SubscribeTransactionUseCase
 import com.overshoot.moneygoal.BaseViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
 import kotlinx.coroutines.flow.catch

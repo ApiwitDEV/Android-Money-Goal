@@ -1,9 +1,9 @@
 package com.overshoot.domain
 
-import com.overshoot.domain.usecase.AddGoalUseCase
-import com.overshoot.domain.usecase.AddTransactionUseCase
-import com.overshoot.domain.usecase.GetGoalUseCase
-import com.overshoot.domain.usecase.SubscribeTransactionUseCase
+import com.overshoot.domain.usecase.goal.AddGoalUseCase
+import com.overshoot.domain.usecase.transaction.AddTransactionUseCase
+import com.overshoot.domain.usecase.goal.GetGoalUseCase
+import com.overshoot.domain.usecase.transaction.SubscribeTransactionUseCase
 import com.overshoot.domain.usecase.authentication.LoginWithEmailUseCase
 import com.overshoot.domain.usecase.authentication.LogoutUseCase
 import com.overshoot.domain.usecase.authentication.RegisterWithEmailUseCase

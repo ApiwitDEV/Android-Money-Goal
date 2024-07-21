@@ -25,7 +25,6 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.MoneyGoal">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,16 +35,7 @@
 
         <activity android:name=".component.authentication.AuthenticationActivity"
             android:exported="true"
-            android:theme="@style/Theme.MoneyGoal">
-            >
-
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-
-        </activity>
+            android:theme="@style/Theme.MoneyGoal"/>
 
         <service
             android:name=".component.notification.MyFirebaseMessagingService"
