@@ -33,7 +33,11 @@ fun AuthenticationNavigationHost(
             )
         }
         composable(AuthenticationRoute.Register.name) {
-            SignUpScreen { email, password ->
+            SignUpScreen(
+                onBack = {
+                    authenticationViewModel.navigateTo(AuthenticationRoute.Login)
+                }
+            ) { email, password ->
                 onConfirmSignUp(email, password)
             }
         }
