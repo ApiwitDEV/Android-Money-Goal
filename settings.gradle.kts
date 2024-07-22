@@ -14,6 +14,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Money Goal"
-include(":app")
+include(":Money Goal App")
 include(":data")
 include(":domain")
+include(":Health Goal App")
