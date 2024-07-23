@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.component.authentication.ui
+package com.example.authentication.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -29,9 +29,8 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.overshoot.moneygoal.component.authentication.stateholder.AuthenticationViewModel
-import com.overshoot.moneygoal.navigation.authentication.AuthenticationRoute
-import com.overshoot.moneygoal.theme.MoneyGoalTheme
+import com.example.authentication.AuthenticationRoute
+import com.example.authentication.stateholder.AuthenticationViewModel
 
 @Composable
 fun SignInScreen(
@@ -145,10 +144,10 @@ private fun LoginContent(
     }
 }
 
-@Composable
-@Preview(device = Devices.PIXEL_4)
-private fun LoginContentPreview() {
-    MoneyGoalTheme {
-        LoginContent(email = "", password = "")
-    }
-}
+//@Composable
+//@Preview(device = Devices.PIXEL_4)
+//private fun LoginContentPreview() {
+//    MoneyGoalTheme {
+//        LoginContent(email = "", password = "")
+//    }
+//}

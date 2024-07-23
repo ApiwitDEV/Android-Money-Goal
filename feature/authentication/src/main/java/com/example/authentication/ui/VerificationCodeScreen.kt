@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.component.authentication.ui
+package com.example.authentication.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -22,8 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.overshoot.moneygoal.component.authentication.stateholder.AuthenticationViewModel
-import com.overshoot.moneygoal.navigation.authentication.AuthenticationRoute
+import com.example.authentication.AuthenticationRoute
+import com.example.authentication.stateholder.AuthenticationViewModel
 
 @Composable
 fun VerificationCodeScreen(

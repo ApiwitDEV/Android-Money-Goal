@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.component.authentication.ui
+package com.example.authentication.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.Button

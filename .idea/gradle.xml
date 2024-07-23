@@ -13,6 +13,8 @@
             <option value="$PROJECT_DIR$/Money Goal App" />
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/domain" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/authentication" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

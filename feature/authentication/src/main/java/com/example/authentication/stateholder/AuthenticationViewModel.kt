@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.component.authentication.stateholder
+package com.example.authentication.stateholder
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableLongStateOf
@@ -7,13 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.authentication.AuthenticationRoute
 import com.overshoot.data.datasource.onFailure
 import com.overshoot.data.datasource.onSuccess
 import com.overshoot.domain.usecase.authentication.LoginWithEmailUseCase
 import com.overshoot.domain.usecase.authentication.RegisterWithEmailUseCase
 import com.overshoot.domain.usecase.authentication.RequestVerificationCodeUseCase
 import com.overshoot.domain.usecase.authentication.VerifyCodeUseCase
-import com.overshoot.moneygoal.navigation.authentication.AuthenticationRoute
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +26,8 @@ class AuthenticationViewModel(
     private val verifyCodeUseCase: VerifyCodeUseCase
 ): ViewModel() {
 
-    private val _goToMainActivity = MutableLiveData<Unit>()
-    val goToMainActivity: LiveData<Unit> = _goToMainActivity
+    private val _isLoginSuccess = MutableLiveData<Unit>()
+    val isLoginSuccess: LiveData<Unit> = _isLoginSuccess
 
     private val _authenticationCurrentScreen = MutableStateFlow(AuthenticationRoute.Login)
     val authenticationCurrentScreen: StateFlow<AuthenticationRoute> = _authenticationCurrentScreen
@@ -53,7 +53,7 @@ class AuthenticationViewModel(
                     it
                         .onSuccess {
                             _isLoading.value = false
-                            _goToMainActivity.value = Unit
+                            _isLoginSuccess.value = Unit
                         }
                         .onFailure { message ->
                             _isLoading.value = false
@@ -71,7 +71,7 @@ class AuthenticationViewModel(
                     it
                         .onSuccess {
                             _isLoading.value = false
-                            _goToMainActivity.value = Unit
+                            _isLoginSuccess.value = Unit
                         }
                         .onFailure { message ->
                             _isLoading.value = false
@@ -116,7 +116,7 @@ class AuthenticationViewModel(
                     it
                         .onSuccess {
                             _isLoading.value = false
-                            _goToMainActivity.value = Unit
+                            _isLoginSuccess.value = Unit
                         }
                         .onFailure { message ->
                             _isLoading.value = false

@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.navigation.authentication
+package com.example.authentication
 
 enum class AuthenticationRoute {
     Login,

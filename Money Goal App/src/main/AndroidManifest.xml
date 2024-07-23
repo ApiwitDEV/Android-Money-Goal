@@ -33,9 +33,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".component.authentication.AuthenticationActivity"
-            android:exported="true"
-            android:theme="@style/Theme.MoneyGoal"/>
+        <activity android:name="com.example.authentication.AuthenticationActivity"
+            android:theme="@style/Theme.MoneyGoal"
+            />
 
         <service
             android:name=".component.notification.MyFirebaseMessagingService"

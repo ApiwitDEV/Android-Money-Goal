@@ -3,7 +3,6 @@ package com.overshoot.moneygoal
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -20,11 +19,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.asFlow
+import com.example.authentication.AuthenticationNavigationHost
+import com.example.authentication.stateholder.AuthenticationViewModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -32,11 +39,11 @@ import com.google.firebase.auth.auth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
+import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.navigation.main.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
-import com.overshoot.moneygoal.component.authentication.AuthenticationActivity
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -50,6 +57,8 @@ class MainActivity : ComponentActivity() {
 
     private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
     private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
+
+    private val authenticationViewModel by viewModel<AuthenticationViewModel>()
 
     private lateinit var auth: FirebaseAuth
 
@@ -116,15 +125,43 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyGoalTheme {
                 //A surface container using the 'background' color from the theme
-                NavigationHost(
-                    homeGoalDetailViewModel = homeGoalDetailViewModel,
-                    homeTransactionViewModel = homeTransactionViewModel,
-                    onSignOut = {
-                        auth.signOut()
-                        goToLoginActivity()
-                        finish()
+                val currentUser = auth.currentUser
+                var isGoToLogin by remember {
+                    mutableStateOf(currentUser == null)
+                }
+
+                if (!isGoToLogin) {
+                    NavigationHost(
+                        homeGoalDetailViewModel = homeGoalDetailViewModel,
+                        homeTransactionViewModel = homeTransactionViewModel,
+                        onSignOut = {
+                            auth.signOut()
+                            isGoToLogin = true
+                        }
+                    )
+                }
+
+                if (isGoToLogin) {
+                    AuthenticationNavigationHost(
+                        authenticationViewModel = authenticationViewModel,
+                        onConfirmSignUp = { email, password ->
+                            authenticationViewModel.registerWithEmail(email, password)
+                        },
+                        onFinish = {
+                            finish()
+                        }
+                    )
+                }
+
+                LaunchedEffect(key1 = Unit) {
+                    authenticationViewModel.isLoginSuccess.asFlow().collect {
+                        isGoToLogin = false
                     }
-                )
+                }
+
+                if (authenticationViewModel.isLoading.value) {
+                    LoadingDialog()
+                }
 
                 val scope = rememberCoroutineScope()
                 val sheetState = rememberModalBottomSheetState()
@@ -163,34 +200,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val currentUser = auth.currentUser
-        if (currentUser == null) {
-            goToLoginActivity()
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val NOTIFICATION_CHANNEL_ID = "1"
@@ -208,9 +217,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun goToLoginActivity() {
-        Intent(baseContext, AuthenticationActivity::class.java).also {
-            startActivity(it)
-            finish()
-        }
+//        Intent(baseContext, AuthenticationActivity::class.java).also {
+//            startActivity(it)
+//            finish()
+//        }
     }
 }

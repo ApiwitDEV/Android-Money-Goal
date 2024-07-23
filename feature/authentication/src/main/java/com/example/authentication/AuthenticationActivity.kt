@@ -1,15 +1,11 @@
-package com.overshoot.moneygoal.component.authentication
+package com.example.authentication
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.overshoot.moneygoal.MainActivity
-import com.overshoot.moneygoal.common.ui.LoadingDialog
-import com.overshoot.moneygoal.component.authentication.stateholder.AuthenticationViewModel
-import com.overshoot.moneygoal.navigation.authentication.AuthenticationNavigationHost
-import com.overshoot.moneygoal.theme.MoneyGoalTheme
+import androidx.compose.material3.MaterialTheme
+import com.example.authentication.stateholder.AuthenticationViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AuthenticationActivity: ComponentActivity() {
@@ -21,7 +17,7 @@ class AuthenticationActivity: ComponentActivity() {
         observeLiveData()
 
         setContent {
-            MoneyGoalTheme {
+            MaterialTheme {
                 AuthenticationNavigationHost(
                     authenticationViewModel = authenticationViewModel,
                     onConfirmSignUp = { email, password ->
@@ -32,7 +28,7 @@ class AuthenticationActivity: ComponentActivity() {
                     }
                 )
                 if (authenticationViewModel.isLoading.value) {
-                    LoadingDialog()
+                    //LoadingDialog()
                 }
             }
         }
@@ -40,7 +36,7 @@ class AuthenticationActivity: ComponentActivity() {
     }
 
     private fun observeLiveData() {
-        authenticationViewModel.goToMainActivity.observe(this) {
+        authenticationViewModel.isLoginSuccess.observe(this) {
             goToMainActivity()
         }
         authenticationViewModel.errorMessage.observe(this) {
@@ -49,9 +45,9 @@ class AuthenticationActivity: ComponentActivity() {
     }
 
     private fun goToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
+//        val intent = Intent(this, MainActivity::class.java)
+//        startActivity(intent)
+//        finish()
     }
 
 }

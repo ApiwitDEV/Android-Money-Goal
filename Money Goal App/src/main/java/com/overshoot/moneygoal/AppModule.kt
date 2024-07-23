@@ -1,6 +1,6 @@
 package com.overshoot.moneygoal
 
-import com.overshoot.moneygoal.component.authentication.stateholder.AuthenticationViewModel
+import com.example.authentication.stateholder.AuthenticationViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel

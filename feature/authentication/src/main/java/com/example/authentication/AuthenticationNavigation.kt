@@ -1,4 +1,4 @@
-package com.overshoot.moneygoal.navigation.authentication
+package com.example.authentication
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,10 +7,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.overshoot.moneygoal.component.authentication.stateholder.AuthenticationViewModel
-import com.overshoot.moneygoal.component.authentication.ui.SignInScreen
-import com.overshoot.moneygoal.component.authentication.ui.SignUpScreen
-import com.overshoot.moneygoal.component.authentication.ui.VerificationCodeScreen
+import com.example.authentication.stateholder.AuthenticationViewModel
+import com.example.authentication.ui.SignInScreen
+import com.example.authentication.ui.SignUpScreen
+import com.example.authentication.ui.VerificationCodeScreen
 
 @Composable
 fun AuthenticationNavigationHost(
@@ -25,7 +25,7 @@ fun AuthenticationNavigationHost(
         startDestination = remember { authenticationViewModel.authenticationCurrentScreen.value.name }
     ) {
         composable(AuthenticationRoute.Login.name) {
-            SignInScreen(
+           SignInScreen(
                 authenticationViewModel = authenticationViewModel,
                 onNavigateBack = {
                     onFinish()
@@ -42,7 +42,9 @@ fun AuthenticationNavigationHost(
             }
         }
         composable(AuthenticationRoute.VerificationCode.name) {
-            VerificationCodeScreen(authenticationViewModel = authenticationViewModel)
+            VerificationCodeScreen(
+                authenticationViewModel = authenticationViewModel
+            )
         }
     }
 
