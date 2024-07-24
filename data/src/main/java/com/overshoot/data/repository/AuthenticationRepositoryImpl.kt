@@ -5,7 +5,7 @@ import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.Success
 import com.overshoot.data.datasource.local.hardware.SimCard
 import com.overshoot.data.datasource.local.user.UserInfoDao
-import com.overshoot.data.datasource.remote.RestfulApiService
+import com.overshoot.data.datasource.remote.RestApiService
 import com.overshoot.data.datasource.remote.authentication.AuthenticationService
 import com.overshoot.data.datasource.remote.authentication.model.AuthResponse
 import kotlinx.coroutines.channels.awaitClose
@@ -15,9 +15,11 @@ import kotlinx.coroutines.flow.callbackFlow
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
     private val userInfoDao: UserInfoDao,
-    private val restfulApiService: RestfulApiService,
+    private val restApiService: RestApiService,
     private val simCard: SimCard
 ): BaseRepository(), AuthenticationRepository {
+
+    override val isSigned = authenticationService.getUserInfo() != null
 
     override fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>> {
         return callbackFlow {
@@ -49,7 +51,7 @@ class AuthenticationRepositoryImpl(
                 email,
                 password,
                 onSuccess = {
-                    restfulApiService.collectUserInfo()
+                    restApiService.collectUserInfo()
                     userInfoDao.collectUserInfo()
                 },
                 onFailure = { exception ->

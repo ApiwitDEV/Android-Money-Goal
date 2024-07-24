@@ -20,31 +20,25 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.asFlow
-import com.example.authentication.AuthenticationNavigationHost
 import com.example.authentication.stateholder.AuthenticationViewModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import com.overshoot.moneygoal.common.ui.LoadingDialog
-import com.overshoot.moneygoal.navigation.main.NavigationHost
+import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
+import com.overshoot.moneygoal.navigation.MainNavigationRoute
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -54,15 +48,9 @@ class MainActivity : ComponentActivity() {
     private val internetConnectivity by inject<InternetConnectivity>()
 
     private val notificationViewModel by viewModel<NotificationViewModel>()
-
     private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
     private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
-
     private val authenticationViewModel by viewModel<AuthenticationViewModel>()
-
-    private lateinit var auth: FirebaseAuth
-
-//    private val appStateHolder = AppStateHolder.getInstance()
     
     private fun askNotificationPermission() {
         when {
@@ -104,7 +92,6 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        auth = Firebase.auth
         askNotificationPermission()
         Firebase.messaging.subscribeToTopic("A")
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
@@ -124,38 +111,29 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             MoneyGoalTheme {
-                //A surface container using the 'background' color from the theme
-                val currentUser = auth.currentUser
-                var isGoToLogin by remember {
-                    mutableStateOf(currentUser == null)
-                }
 
-                if (!isGoToLogin) {
-                    NavigationHost(
-                        homeGoalDetailViewModel = homeGoalDetailViewModel,
-                        homeTransactionViewModel = homeTransactionViewModel,
-                        onSignOut = {
-                            auth.signOut()
-                            isGoToLogin = true
-                        }
-                    )
-                }
+                val appStateHolder = rememberAppState(
+                    internetState = internetConnectivity.state,
+                    isSigned = authenticationViewModel.isSigned
+                )
 
-                if (isGoToLogin) {
-                    AuthenticationNavigationHost(
-                        authenticationViewModel = authenticationViewModel,
-                        onConfirmSignUp = { email, password ->
-                            authenticationViewModel.registerWithEmail(email, password)
-                        },
-                        onFinish = {
-                            finish()
-                        }
-                    )
-                }
+                NavigationHost(
+                    appStateHolder = appStateHolder,
+                    authenticationViewModel = authenticationViewModel,
+                    homeGoalDetailViewModel = homeGoalDetailViewModel,
+                    homeTransactionViewModel = homeTransactionViewModel,
+                    onSignOut = {
+                        authenticationViewModel.signOut()
+                        appStateHolder.navigateTo(MainNavigationRoute.Login)
+                    },
+                    onCloseApp = {
+                        finish()
+                    }
+                )
 
                 LaunchedEffect(key1 = Unit) {
                     authenticationViewModel.isLoginSuccess.asFlow().collect {
-                        isGoToLogin = false
+                        appStateHolder.navigateTo(MainNavigationRoute.HomeScreen)
                     }
                 }
 
@@ -165,9 +143,6 @@ class MainActivity : ComponentActivity() {
 
                 val scope = rememberCoroutineScope()
                 val sheetState = rememberModalBottomSheetState()
-                val appStateHolder = rememberAppState(
-                    internetState = internetConnectivity.state
-                )
 
                 if (notificationViewModel.showDialog.value == true) {
                     Dialog(onDismissRequest = {
@@ -214,12 +189,5 @@ class MainActivity : ComponentActivity() {
             (getSystemService(NOTIFICATION_SERVICE) as NotificationManager)
                 .createNotificationChannel(mChannel)
         }
-    }
-
-    private fun goToLoginActivity() {
-//        Intent(baseContext, AuthenticationActivity::class.java).also {
-//            startActivity(it)
-//            finish()
-//        }
     }
 }

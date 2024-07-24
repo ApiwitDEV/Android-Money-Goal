@@ -1,6 +1,6 @@
 package com.overshoot.data.datasource.remote
 
-interface RestfulApiService {
+interface RestApiService {
 
     fun collectUserInfo()
 

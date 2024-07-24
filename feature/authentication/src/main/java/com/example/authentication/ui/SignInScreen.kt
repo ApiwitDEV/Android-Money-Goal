@@ -1,5 +1,6 @@
 package com.example.authentication.ui
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,17 +27,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.authentication.AuthenticationRoute
+import androidx.lifecycle.asFlow
 import com.example.authentication.stateholder.AuthenticationViewModel
 
 @Composable
 fun SignInScreen(
     authenticationViewModel: AuthenticationViewModel,
+    onSignUpClicked: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
     var email by remember {
@@ -46,12 +51,16 @@ fun SignInScreen(
     BackHandler {
         onNavigateBack()
     }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = null) {
+        authenticationViewModel.errorMessage.asFlow().collect {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+    }
     LoginContent(
         email = email,
         password = password,
-        onSignUpClicked = {
-            authenticationViewModel.navigateTo(AuthenticationRoute.Register)
-        },
+        onSignUpClicked = onSignUpClicked,
         onSignInClicked = {
             authenticationViewModel.loginWithEmail(email, password)
         },

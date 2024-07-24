@@ -2,6 +2,7 @@ package com.overshoot.moneygoal.component.home.ui
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -60,6 +61,7 @@ fun HomeScreen(
     homeGoalDetailViewModel: HomeGoalDetailViewModel,
     homeTransactionViewModel: HomeTransactionViewModel,
     onGoto: () -> Unit,
+    onBackPressed: () -> Unit,
     onSignOut: () -> Unit
 ) {
     val selected = remember { mutableStateOf(HomeContentType.HomeContent) }
@@ -71,6 +73,10 @@ fun HomeScreen(
     var sheetType by remember { mutableStateOf<SheetType?>(null) }
 
     val goalListStateHolder = remember { GoalListStateHolder() }
+
+    BackHandler {
+        onBackPressed()
+    }
 
     LaunchedEffect(key1 = null) {
         goalListStateHolder.collectGoalPeriodListState(

@@ -7,7 +7,7 @@ import com.overshoot.data.datasource.local.transaction.FakeTransactionDataSource
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
 import com.overshoot.data.datasource.local.user.UserInfoDao
-import com.overshoot.data.datasource.remote.RestfulApiService
+import com.overshoot.data.datasource.remote.RestApiService
 import com.overshoot.data.datasource.remote.authentication.AuthenticationService
 import com.overshoot.data.datasource.remote.authentication.AuthenticationServiceImpl
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
@@ -35,7 +35,7 @@ val dataModule = module {
                     println()
                 }
             },
-            object : RestfulApiService {
+            object : RestApiService {
                 override fun collectUserInfo() {
                     println()
                 }
