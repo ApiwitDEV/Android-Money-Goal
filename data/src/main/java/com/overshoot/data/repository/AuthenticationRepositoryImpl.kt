@@ -19,7 +19,9 @@ class AuthenticationRepositoryImpl(
     private val simCard: SimCard
 ): BaseRepository(), AuthenticationRepository {
 
-    override val isSigned = authenticationService.getUserInfo() != null
+    override fun isSignedCheck(): Boolean {
+        return authenticationService.getUserInfo() != null
+    }
 
     override fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>> {
         return callbackFlow {

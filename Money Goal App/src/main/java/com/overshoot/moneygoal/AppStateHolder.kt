@@ -17,15 +17,13 @@ import kotlinx.coroutines.launch
 fun rememberAppState(
     scope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController(),
-    internetState: Flow<InternetConnectivity.InternetConnectivityState>,
-    isSigned: Boolean
+    internetState: Flow<InternetConnectivity.InternetConnectivityState>
 ): AppStateHolder {
     val appState = remember {
         AppStateHolder(
             scope,
             navController,
-            internetState,
-            isSigned
+            internetState
         )
     }
     return appState
@@ -34,8 +32,7 @@ fun rememberAppState(
 class AppStateHolder(
     scope: CoroutineScope,
     val navController: NavHostController,
-    internetState: Flow<InternetConnectivity.InternetConnectivityState>,
-    val isSigned: Boolean
+    internetState: Flow<InternetConnectivity.InternetConnectivityState>
 ) {
     private val _isShowNoInternetDrawer = mutableStateOf<Boolean?>(null)
     val isShowNoInternetDrawer: State<Boolean?> = _isShowNoInternetDrawer

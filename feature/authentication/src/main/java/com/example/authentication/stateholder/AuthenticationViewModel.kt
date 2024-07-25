@@ -25,8 +25,6 @@ class AuthenticationViewModel(
     private val authenticationRepository: AuthenticationRepository
 ): ViewModel() {
 
-    val isSigned = authenticationRepository.isSigned
-
     private val _isLoginSuccess = MutableLiveData<Unit>()
     val isLoginSuccess: LiveData<Unit> = _isLoginSuccess
 
@@ -38,6 +36,10 @@ class AuthenticationViewModel(
 
     private val _countDown = mutableLongStateOf(-1)
     val countDown: State<Long> = _countDown
+
+    fun isSigned(): Boolean {
+        return authenticationRepository.isSignedCheck()
+    }
 
     fun loginWithEmail(email: String, password: String) {
         viewModelScope.launch {

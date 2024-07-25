@@ -29,7 +29,7 @@ fun NavigationHost(
     val navController = appStateHolder.navController
     NavHost(
         navController = navController,
-        startDestination = if (appStateHolder.isSigned) MainNavigationRoute.HomeScreen.name else MainNavigationRoute.Login.name
+        startDestination = if (authenticationViewModel.isSigned()) MainNavigationRoute.HomeScreen.name else MainNavigationRoute.Login.name
     ) {
 
         composable(route = MainNavigationRoute.HomeScreen.name) {

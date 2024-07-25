@@ -113,8 +113,7 @@ class MainActivity : ComponentActivity() {
             MoneyGoalTheme {
 
                 val appStateHolder = rememberAppState(
-                    internetState = internetConnectivity.state,
-                    isSigned = authenticationViewModel.isSigned
+                    internetState = internetConnectivity.state
                 )
 
                 NavigationHost(

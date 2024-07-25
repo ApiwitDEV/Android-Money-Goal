@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {
 
-    val isSigned: Boolean
+    fun isSignedCheck(): Boolean
 
     fun loginWithEmail(email: String, password: String): Flow<ResultData<AuthResponse>>
 
