@@ -1,7 +1,7 @@
 package com.overshoot.data.repository
 
 import com.overshoot.data.datasource.ResultData
-import com.overshoot.data.datasource.remote.authentication.model.AuthResponse
+import com.overshoot.data.datasource.remote.model.authentication.model.AuthResponse
 import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationRepository {

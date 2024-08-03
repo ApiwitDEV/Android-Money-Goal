@@ -1,21 +1,26 @@
 package com.overshoot.data.repository
 
+import android.util.Log
 import com.overshoot.data.datasource.Failure
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.Success
 import com.overshoot.data.datasource.local.hardware.SimCard
 import com.overshoot.data.datasource.local.user.UserInfoDao
-import com.overshoot.data.datasource.remote.RestApiService
-import com.overshoot.data.datasource.remote.authentication.AuthenticationService
-import com.overshoot.data.datasource.remote.authentication.model.AuthResponse
+import com.overshoot.data.datasource.remote.MoneyGoalApiService
+import com.overshoot.data.datasource.remote.model.authentication.AuthenticationService
+import com.overshoot.data.datasource.remote.model.authentication.model.AuthResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AuthenticationRepositoryImpl(
     private val authenticationService: AuthenticationService,
     private val userInfoDao: UserInfoDao,
-    private val restApiService: RestApiService,
+    private val moneyGoalApiService: MoneyGoalApiService,
     private val simCard: SimCard
 ): BaseRepository(), AuthenticationRepository {
 
@@ -28,9 +33,21 @@ class AuthenticationRepositoryImpl(
             authenticationService.loginWithEmail(
                 email = email,
                 password = password,
-                onSuccess = {
-                    trySend(Success(AuthResponse(message = "Success")))
-                    userInfoDao.collectUserInfo()
+                onSuccess = { taskAuth ->
+                    taskAuth.result.user?.getIdToken(true)
+                        ?.addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                val token = it.result.token
+                                Log.i("token", token?:"")
+                                launch(Dispatchers.IO) {
+                                    Log.d("response", async { moneyGoalApiService.getInfo().toString() }.await())
+                                }
+                                trySend(Success(AuthResponse(message = "Success")))
+                            }
+                            else {
+                                trySend(Failure(message = it.exception?.message?:""))
+                            }
+                        }
                 },
                 onFailure = { exception ->
                     trySend(Failure(message = exception.message?:""))
@@ -53,7 +70,6 @@ class AuthenticationRepositoryImpl(
                 email,
                 password,
                 onSuccess = {
-                    restApiService.collectUserInfo()
                     userInfoDao.collectUserInfo()
                 },
                 onFailure = { exception ->

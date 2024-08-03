@@ -32,7 +32,7 @@ open class BaseRepository {
             .await()
     }
 
-    suspend fun <T: Any> callRestFulApi(
+    suspend fun <T: Any> callRestApi(
         action: suspend CoroutineScope.() -> T
     ): ResultData<T> {
         return if (internetConnectivity.isAvailable()) {

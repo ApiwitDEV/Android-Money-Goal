@@ -1,4 +1,4 @@
-package com.overshoot.data.datasource.remote.authentication
+package com.overshoot.data.datasource.remote.model.authentication
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult

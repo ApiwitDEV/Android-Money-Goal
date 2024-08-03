@@ -63,4 +63,43 @@ dependencies {
     
     implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
 
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation("com.squareup.moshi:moshi:1.15.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.github.mrmike:ok2curl:0.8.0")
+
+}
+
+// Preferences DataStore (SharedPreferences like APIs)
+dependencies {
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // optional - RxJava2 support
+    implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.1")
+
+    // optional - RxJava3 support
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.1")
+}
+
+// Alternatively - use the following artifact without an Android dependency.
+dependencies {
+    implementation("androidx.datastore:datastore-preferences-core:1.1.1")
+}
+// Typed DataStore (Typed API surface, such as Proto)
+dependencies {
+    implementation("androidx.datastore:datastore:1.1.1")
+
+    // optional - RxJava2 support
+    implementation("androidx.datastore:datastore-rxjava2:1.1.1")
+
+    // optional - RxJava3 support
+    implementation("androidx.datastore:datastore-rxjava3:1.1.1")
+}
+
+// Alternatively - use the following artifact without an Android dependency.
+dependencies {
+    implementation("androidx.datastore:datastore-core:1.1.1")
 }

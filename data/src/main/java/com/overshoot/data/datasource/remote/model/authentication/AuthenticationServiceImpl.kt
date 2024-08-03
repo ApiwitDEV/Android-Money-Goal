@@ -1,4 +1,4 @@
-package com.overshoot.data.datasource.remote.authentication
+package com.overshoot.data.datasource.remote.model.authentication
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -39,6 +39,7 @@ class AuthenticationServiceImpl: AuthenticationService {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
+//                    saveToken()
                     onSuccess(it)
                 }
                 else {

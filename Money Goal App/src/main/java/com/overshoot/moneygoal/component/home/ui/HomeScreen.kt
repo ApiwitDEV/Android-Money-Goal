@@ -111,6 +111,7 @@ fun HomeScreen(
         openAddGoalSheet = {
             sheetType = SheetType.AddGoalSheet
             showBottomSheet.value = true
+            homeGoalDetailViewModel.allGoal
             scope.launch {
                 sheetState.show()
             }
