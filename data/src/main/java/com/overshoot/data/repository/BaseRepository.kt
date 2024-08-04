@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
 import org.koin.java.KoinJavaComponent.inject
+import retrofit2.Response
 import kotlin.coroutines.CoroutineContext
 
 open class BaseRepository {
@@ -33,12 +34,12 @@ open class BaseRepository {
     }
 
     suspend fun <T: Any> callRestApi(
-        action: suspend CoroutineScope.() -> T
+        action: suspend CoroutineScope.() -> Response<T>
     ): ResultData<T> {
         return if (internetConnectivity.isAvailable()) {
             try {
                 withTimeout(5000) {
-                    Success(data = action())
+                    action().getResultData()
                 }
             } catch (e: Exception) {
                 Failure(message = e.message?:"")
@@ -53,6 +54,18 @@ open class BaseRepository {
             subscribe {
                 emit(it)
             }
+        }
+    }
+
+    private fun <T : Any> Response<T>.getResultData(): ResultData<T> {
+        return try {
+            when(this.code()) {
+                401 -> Failure(message = "Unauthorized")
+                500 -> Failure(message = "Server Error")
+                else -> Success(this.body()!!)
+            }
+        } catch (e: Exception) {
+            Failure(message = "unknown")
         }
     }
 

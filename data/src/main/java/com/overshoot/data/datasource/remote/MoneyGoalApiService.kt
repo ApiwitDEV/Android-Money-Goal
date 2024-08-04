@@ -27,6 +27,6 @@ interface MoneyGoalApiService {
     suspend fun getInfo(): Response<Employees>
 
     @POST("/goals")
-    suspend fun postGoal(@Body body: PostGoalRequestBody): Response<PostGoalRequestBody>
+    suspend fun postGoal(@Body body: PostGoalRequestBody): Response<PostGoalResponse>
 
 }
