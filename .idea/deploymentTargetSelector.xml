@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Money_Goal_App">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-07-22T09:03:01.303171Z">
+        <DropdownSelection timestamp="2024-08-04T08:40:21.532110Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/bas/.android/avd/Pixel_7_Pro_API_34.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCTB1KSCTK" />
             </handle>
           </Target>
         </DropdownSelection>

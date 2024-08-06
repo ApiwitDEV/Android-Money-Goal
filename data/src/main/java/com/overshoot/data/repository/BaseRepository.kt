@@ -38,7 +38,7 @@ open class BaseRepository {
     ): ResultData<T> {
         return if (internetConnectivity.isAvailable()) {
             try {
-                withTimeout(5000) {
+                withTimeout(30000) {
                     action().getResultData()
                 }
             } catch (e: Exception) {
@@ -58,14 +58,10 @@ open class BaseRepository {
     }
 
     private fun <T : Any> Response<T>.getResultData(): ResultData<T> {
-        return try {
-            when(this.code()) {
-                401 -> Failure(message = "Unauthorized")
-                500 -> Failure(message = "Server Error")
-                else -> Success(this.body()!!)
-            }
-        } catch (e: Exception) {
-            Failure(message = "unknown")
+        return when(this.code()) {
+            401 -> Failure(message = "Unauthorized")
+            500 -> Failure(message = "Server Error")
+            else -> Success(this.body()!!)
         }
     }
 

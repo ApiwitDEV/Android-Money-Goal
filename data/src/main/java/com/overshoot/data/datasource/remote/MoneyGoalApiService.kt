@@ -5,6 +5,7 @@ import com.overshoot.data.datasource.remote.model.goal.PostGoalRequestBody
 import com.overshoot.data.datasource.remote.model.goal.PostGoalResponse
 import com.overshoot.data.datasource.remote.model.something.RequestBody
 import com.overshoot.data.datasource.remote.model.something.Something
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,5 +29,8 @@ interface MoneyGoalApiService {
 
     @POST("/goals")
     suspend fun postGoal(@Body body: PostGoalRequestBody): Response<PostGoalResponse>
+
+    @GET("/unauthorizedTest")
+    fun getUnauthorizedTest(): Call<PostGoalResponse>
 
 }

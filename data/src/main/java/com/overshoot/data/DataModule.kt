@@ -30,7 +30,7 @@ val dataModule = module {
         AuthenticationRepositoryImpl(
             authenticationService = get(),
             userInfoDao = UserDatabase.getDatabase(androidContext()).getUserInfoDao(),
-            moneyGoalApiService = RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao())),
+            moneyGoalApiService = RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao(), get())),
             simCard = get()
         )
     }
@@ -40,7 +40,7 @@ val dataModule = module {
     single<GoalRepository> {
         GoalRepositoryImpl(
             goalDao = GoalDatabase.getDatabase(androidContext()).goalDao(),
-            moneyGoalApiService = RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao()))
+            moneyGoalApiService = RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao(), get()))
         )
     }
     single<TransactionRepository> {

@@ -3,8 +3,11 @@ package com.overshoot.data.datasource.remote.model.authentication
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationService {
+
+    fun getAccessToken(): Flow<String>
 
     fun getUserInfo(): FirebaseUser?
 

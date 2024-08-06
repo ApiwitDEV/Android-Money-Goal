@@ -9,8 +9,14 @@ import com.overshoot.data.datasource.onFailure
 import com.overshoot.data.datasource.onSuccess
 import com.overshoot.data.datasource.remote.MoneyGoalApiService
 import com.overshoot.data.datasource.remote.model.goal.PostGoalRequestBody
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
+import retrofit2.await
+import retrofit2.awaitResponse
 import java.text.SimpleDateFormat
+import kotlin.coroutines.suspendCoroutine
+import kotlin.math.log
 
 class GoalRepositoryImpl(
     private val goalDao: GoalDao,
@@ -25,6 +31,7 @@ class GoalRepositoryImpl(
     ): ResultData<Unit> {
         val time = Calendar.getInstance().time
         callRestApi {
+//            moneyGoalApiService.getUnauthorizedTest().execute()
             moneyGoalApiService.postGoal(
                 PostGoalRequestBody(
                     name = goalName,
@@ -39,6 +46,12 @@ class GoalRepositoryImpl(
                 )
             )
         }
+            .onFailure {
+                println(it)
+            }
+            .onSuccess {
+                println(it)
+            }
         return callDB {
             val goal = GoalEntity(
                 name = goalName,
