@@ -5,6 +5,8 @@ import com.moczul.ok2curl.CurlInterceptor
 import com.moczul.ok2curl.logger.Logger
 import com.overshoot.data.datasource.local.user.UserInfoDao
 import com.overshoot.data.datasource.local.user.UserInfoEntity
+import com.overshoot.data.datasource.onFailure
+import com.overshoot.data.datasource.onSuccess
 import com.overshoot.data.datasource.remote.model.authentication.AuthenticationService
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
@@ -42,22 +44,38 @@ object HttpClient {
                         chain.proceed(chain.request())
                     }
                     if (response.code == 401) {
+                        var isRefreshTokenSuccess = false
                         runBlocking {
-                            authenticationService.getAccessToken().collect { accessToken ->
-                                userInfoDao.saveUserInfo(
-                                    UserInfoEntity(
-                                        accessToken = accessToken,
-                                        refreshToken = "",
-                                        userName = ""
-                                    )
-                                )
+                            authenticationService.getAccessToken().collect { accessTokenResult ->
+                                accessTokenResult
+                                    .onSuccess { accessToken ->
+                                        userInfoDao.saveUserInfo(
+                                            UserInfoEntity(
+                                                accessToken = accessToken,
+                                                refreshToken = "",
+                                                userName = ""
+                                            )
+                                        )
+                                        isRefreshTokenSuccess = true
+                                    }
+                                    .onFailure {
+                                        Log.e("okHttp", "refresh accessToken fail")
+                                    }
                                 coroutineContext.cancel()
                             }
                         }
-                        val newRequest = chain.request().newBuilder()
-                            .addHeader("Authorization", "Bearer "+userInfoDao.getUserInfo().last().accessToken)
-                            .build()
-                        chain.proceed(newRequest)
+                        if (isRefreshTokenSuccess) {
+                            val newRequest = chain.request().newBuilder()
+                                .addHeader("Authorization", "Bearer "+userInfoDao.getUserInfo().last().accessToken)
+                                .build()
+                            chain.proceed(newRequest)
+                        }
+                        else {
+                            chain.proceed(chain.request()).newBuilder()
+                                .code(401)
+                                .message("refresh accessToken fail")
+                                .build()
+                        }
                     }
                     else {
                         response

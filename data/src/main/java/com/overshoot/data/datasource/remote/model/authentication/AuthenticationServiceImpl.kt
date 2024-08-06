@@ -15,6 +15,9 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.overshoot.data.datasource.Failure
+import com.overshoot.data.datasource.ResultData
+import com.overshoot.data.datasource.Success
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.concurrent.TimeUnit
@@ -28,10 +31,13 @@ class AuthenticationServiceImpl: AuthenticationService {
 
     private val timeOut: Long = 60
 
-    override fun getAccessToken() = callbackFlow {
+    override fun getAccessToken() = callbackFlow<ResultData<String>> {
         auth.currentUser?.getIdToken(true)
             ?.addOnSuccessListener {
-                trySend(it.token?:"")
+                trySend(Success(it.token?:""))
+            }
+            ?.addOnFailureListener {
+                trySend(Failure(message = ""))
             }
         awaitClose {
             close()
