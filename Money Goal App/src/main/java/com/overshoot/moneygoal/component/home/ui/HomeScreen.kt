@@ -249,7 +249,7 @@ private fun HomeContent(
         },
         content = {
             AnimatedVisibility(
-                modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
+                modifier = Modifier.padding(top = it.calculateTopPadding(), bottom = it.calculateBottomPadding()),
                 visible = selected == HomeContentType.HomeContent,
                 enter = fadeIn(),
                 exit = fadeOut()

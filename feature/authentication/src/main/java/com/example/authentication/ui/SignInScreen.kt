@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
@@ -31,11 +32,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.asFlow
-import com.example.authentication.stateholder.AuthenticationViewModel
+import com.example.authentication.stateholder.SignInViewModel
 
 @Composable
 fun SignInScreen(
-    authenticationViewModel: AuthenticationViewModel,
+    signInViewModel: SignInViewModel,
     onSignUpClicked: () -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -50,7 +51,7 @@ fun SignInScreen(
     }
     val context = LocalContext.current
     LaunchedEffect(key1 = null) {
-        authenticationViewModel.errorMessage.asFlow().collect {
+        signInViewModel.errorMessage.asFlow().collect {
             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
         }
     }
@@ -59,12 +60,12 @@ fun SignInScreen(
         password = password,
         onSignUpClicked = onSignUpClicked,
         onSignInClicked = {
-            authenticationViewModel.loginWithEmail(email, password)
+            signInViewModel.loginWithEmail(email, password)
         },
         onEmailChange = { email = it },
         onPasswordChange = { password = it },
         onRequestVerificationCode = {
-            authenticationViewModel.requestVerificationCode()
+            signInViewModel.requestVerificationCode()
         }
     )
 }
@@ -79,7 +80,7 @@ private fun LoginContent(
     onPasswordChange: (String) -> Unit = {_ ->},
     onRequestVerificationCode: () -> Unit = { }
 ) {
-    Scaffold {
+    Scaffold(modifier = Modifier.imePadding()) {
         Column(
             modifier= Modifier
                 .background(Color.White)

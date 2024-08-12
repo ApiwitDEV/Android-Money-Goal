@@ -3,7 +3,7 @@ package com.overshoot.moneygoal.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.authentication.stateholder.AuthenticationViewModel
+import com.example.authentication.stateholder.SignInViewModel
 import com.example.authentication.ui.SignInScreen
 import com.example.authentication.ui.SignUpScreen
 import com.example.authentication.ui.VerificationCodeScreen
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun NavigationHost(
     appStateHolder: AppStateHolder,
-    authenticationViewModel: AuthenticationViewModel,
+    signInViewModel: SignInViewModel,
     homeGoalDetailViewModel: HomeGoalDetailViewModel,
     homeTransactionViewModel: HomeTransactionViewModel,
     onSignOut: () -> Unit,
@@ -29,7 +29,7 @@ fun NavigationHost(
     val navController = appStateHolder.navController
     NavHost(
         navController = navController,
-        startDestination = if (authenticationViewModel.isSigned()) MainNavigationRoute.HomeScreen.name else MainNavigationRoute.Login.name
+        startDestination = if (signInViewModel.isSigned()) MainNavigationRoute.HomeScreen.name else MainNavigationRoute.Login.name
     ) {
 
         composable(route = MainNavigationRoute.HomeScreen.name) {
@@ -55,7 +55,7 @@ fun NavigationHost(
 
         composable(MainNavigationRoute.Login.name) {
             SignInScreen(
-                authenticationViewModel = authenticationViewModel,
+                signInViewModel = signInViewModel,
                 onSignUpClicked = {
                     appStateHolder.navigateTo(MainNavigationRoute.Register)
                 },
@@ -68,15 +68,12 @@ fun NavigationHost(
                 onBack = {
                     appStateHolder.navigateTo(MainNavigationRoute.Login)
                 },
-                onSignUp = { email, password ->
-                    authenticationViewModel.loginWithEmail(email, password)
-                }
             )
         }
 
         composable(MainNavigationRoute.VerificationCode.name) {
             VerificationCodeScreen(
-                authenticationViewModel = authenticationViewModel
+                signInViewModel = signInViewModel
             )
         }
 

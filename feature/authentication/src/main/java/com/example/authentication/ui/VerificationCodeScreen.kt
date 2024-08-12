@@ -22,11 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.authentication.stateholder.AuthenticationViewModel
+import com.example.authentication.stateholder.SignInViewModel
 
 @Composable
 fun VerificationCodeScreen(
-    authenticationViewModel: AuthenticationViewModel
+    signInViewModel: SignInViewModel
 ) {
     var code by remember { mutableStateOf("") }
     BackHandler {
@@ -55,12 +55,12 @@ fun VerificationCodeScreen(
                         code = c
                     }
                     if (c.length == 6) {
-                        authenticationViewModel.verifyCode(code)
+                        signInViewModel.verifyCode(code)
                     }
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "remaining time ${authenticationViewModel.countDown.value.takeIf { value -> value >= 0 }}")
+            Text(text = "remaining time ${signInViewModel.countDown.value.takeIf { value -> value >= 0 }}")
             Text(text = "Resend Code")
         }
     }

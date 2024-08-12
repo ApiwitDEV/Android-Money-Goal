@@ -17,7 +17,7 @@ import com.overshoot.domain.usecase.authentication.VerifyCodeUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class AuthenticationViewModel(
+class SignInViewModel(
     private val loginWithEmailUseCase: LoginWithEmailUseCase,
     private val registerWithEmailUseCase: RegisterWithEmailUseCase,
     private val requestVerificationCodeUseCase: RequestVerificationCodeUseCase,
@@ -45,24 +45,6 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             _isLoading.value = true
             loginWithEmailUseCase.invoke(email, password)
-                .collect {
-                    it
-                        .onSuccess {
-                            _isLoading.value = false
-                            _isLoginSuccess.value = Unit
-                        }
-                        .onFailure { message ->
-                            _isLoading.value = false
-                            _errorMessage.value = message
-                        }
-                }
-        }
-    }
-
-    fun registerWithEmail(email: String, password: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            registerWithEmailUseCase.invoke("", "", email, password)
                 .collect {
                     it
                         .onSuccess {

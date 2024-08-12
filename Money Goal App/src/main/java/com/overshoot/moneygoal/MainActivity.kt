@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,12 +27,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.asFlow
-import com.example.authentication.stateholder.AuthenticationViewModel
+import com.example.authentication.stateholder.SignInViewModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
+import com.overshoot.data.repository.AuthenticationRepository
 import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
@@ -50,7 +52,8 @@ class MainActivity : ComponentActivity() {
     private val notificationViewModel by viewModel<NotificationViewModel>()
     private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
     private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
-    private val authenticationViewModel by viewModel<AuthenticationViewModel>()
+    private val signInViewModel by viewModel<SignInViewModel>()
+    private val authenticationRepository by inject<AuthenticationRepository>()
     
     private fun askNotificationPermission() {
         when {
@@ -109,8 +112,10 @@ class MainActivity : ComponentActivity() {
                 Log.d("Firebase Log", msg)
             }
         )
+        enableEdgeToEdge()
         setContent {
             MoneyGoalTheme {
+
 
                 val appStateHolder = rememberAppState(
                     internetState = internetConnectivity.state
@@ -118,11 +123,11 @@ class MainActivity : ComponentActivity() {
 
                 NavigationHost(
                     appStateHolder = appStateHolder,
-                    authenticationViewModel = authenticationViewModel,
+                    signInViewModel = signInViewModel,
                     homeGoalDetailViewModel = homeGoalDetailViewModel,
                     homeTransactionViewModel = homeTransactionViewModel,
                     onSignOut = {
-                        authenticationViewModel.signOut()
+                        authenticationRepository.logout()
                         appStateHolder.navigateTo(MainNavigationRoute.Login)
                     },
                     onCloseApp = {
@@ -131,12 +136,12 @@ class MainActivity : ComponentActivity() {
                 )
 
                 LaunchedEffect(key1 = Unit) {
-                    authenticationViewModel.isLoginSuccess.asFlow().collect {
+                    signInViewModel.isLoginSuccess.asFlow().collect {
                         appStateHolder.navigateTo(MainNavigationRoute.HomeScreen)
                     }
                 }
 
-                if (authenticationViewModel.isLoading.value) {
+                if (signInViewModel.isLoading.value) {
                     LoadingDialog()
                 }
 

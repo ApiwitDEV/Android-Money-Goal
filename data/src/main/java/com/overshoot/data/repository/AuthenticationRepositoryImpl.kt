@@ -79,7 +79,7 @@ class AuthenticationRepositoryImpl(
                 email,
                 password,
                 onSuccess = {
-
+                    trySend(Success(AuthResponse(message = "success")))
                 },
                 onFailure = { exception ->
                     trySend(Failure(message = exception.message?:""))
