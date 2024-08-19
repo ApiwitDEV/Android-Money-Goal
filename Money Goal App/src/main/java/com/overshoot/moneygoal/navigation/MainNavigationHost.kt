@@ -24,7 +24,8 @@ fun NavigationHost(
     homeGoalDetailViewModel: HomeGoalDetailViewModel,
     homeTransactionViewModel: HomeTransactionViewModel,
     onSignOut: () -> Unit,
-    onCloseApp: () -> Unit
+    onCloseApp: () -> Unit,
+    xxx: () -> Unit
 ) {
     val navController = appStateHolder.navController
     NavHost(
@@ -59,7 +60,8 @@ fun NavigationHost(
                 onSignUpClicked = {
                     appStateHolder.navigateTo(MainNavigationRoute.Register)
                 },
-                onNavigateBack = onCloseApp
+                onNavigateBack = onCloseApp,
+                xxx = xxx
             )
         }
 

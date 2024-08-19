@@ -32,6 +32,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+        create("profile") {
+            initWith(getByName("debug"))
+        }
     }
     compileOptions {
 //        isCoreLibraryDesugaringEnabled = true
@@ -125,4 +128,11 @@ dependencies {
 
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
+}
+
+dependencies {
+    // ...
+    debugImplementation("com.example.flutter_module:flutter_debug:1.0")
+    releaseImplementation("com.example.flutter_module:flutter_release:1.0")
+    add("profileImplementation", "com.example.flutter_module:flutter_profile:1.0")
 }

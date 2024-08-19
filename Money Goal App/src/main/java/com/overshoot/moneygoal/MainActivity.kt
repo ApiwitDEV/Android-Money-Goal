@@ -40,14 +40,22 @@ import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
+import com.overshoot.moneygoal.flutterinteractor.FlutterInterface
+import com.overshoot.moneygoal.flutterinteractor.FlutterMainExecutor
+import com.overshoot.moneygoal.flutterinteractor.FlutterTestExecutor
 import com.overshoot.moneygoal.navigation.MainNavigationRoute
+import com.overshoot.moneygoal.navigation.NavigationHost
+import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.qualifier.qualifier
 
 class MainActivity : ComponentActivity() {
 
     private val internetConnectivity by inject<InternetConnectivity>()
+    private val flutterMainExecutor by inject<FlutterInterface>(qualifier = qualifier("main"))
+    private val flutterTestExecutor by inject<FlutterInterface>(qualifier = qualifier("test"))
 
     private val notificationViewModel by viewModel<NotificationViewModel>()
     private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
@@ -95,6 +103,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        flutterMainExecutor.executeDartAndCache()
         askNotificationPermission()
         Firebase.messaging.subscribeToTopic("A")
         FirebaseMessaging.getInstance().token.addOnCompleteListener(
@@ -132,6 +141,9 @@ class MainActivity : ComponentActivity() {
                     },
                     onCloseApp = {
                         finish()
+                    },
+                    xxx = {
+                        flutterMainExecutor.startFlutterActivity(this)
                     }
                 )
 
@@ -177,6 +189,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onRestart() {
+        flutterMainExecutor.clearCache()
+        flutterMainExecutor.executeDartAndCache()
+        super.onRestart()
     }
 
     private fun createNotificationChannel() {

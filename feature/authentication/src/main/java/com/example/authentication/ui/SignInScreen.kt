@@ -38,7 +38,8 @@ import com.example.authentication.stateholder.SignInViewModel
 fun SignInScreen(
     signInViewModel: SignInViewModel,
     onSignUpClicked: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    xxx: () -> Unit
 ) {
     var email by remember {
         mutableStateOf("")
@@ -66,7 +67,8 @@ fun SignInScreen(
         onPasswordChange = { password = it },
         onRequestVerificationCode = {
             signInViewModel.requestVerificationCode()
-        }
+        },
+        xxx = xxx
     )
 }
 
@@ -78,7 +80,8 @@ private fun LoginContent(
     onSignInClicked: () -> Unit = { },
     onEmailChange: (String) -> Unit = {_ ->},
     onPasswordChange: (String) -> Unit = {_ ->},
-    onRequestVerificationCode: () -> Unit = { }
+    onRequestVerificationCode: () -> Unit = { },
+    xxx: () -> Unit
 ) {
     Scaffold(modifier = Modifier.imePadding()) {
         Column(
@@ -131,7 +134,7 @@ private fun LoginContent(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = {  }
+                onClick = xxx
             ) {
                 Text(
                     text = "Sign in with Google",
