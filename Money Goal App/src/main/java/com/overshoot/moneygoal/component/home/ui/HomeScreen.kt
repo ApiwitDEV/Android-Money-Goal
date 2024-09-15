@@ -51,7 +51,7 @@ import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDeta
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalPeriodItemUIState
-import com.overshoot.moneygoal.component.scanbill.ScanContent
+import com.overshoot.moneygoal.component.scanbill.ui.ScanContent
 import com.overshoot.moneygoal.component.transactionhistory.TransactionHistoryContent
 import kotlinx.coroutines.launch
 

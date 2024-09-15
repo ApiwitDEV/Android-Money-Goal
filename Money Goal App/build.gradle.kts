@@ -46,6 +46,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -135,4 +136,13 @@ dependencies {
     debugImplementation("com.example.flutter_module:flutter_debug:1.0")
     releaseImplementation("com.example.flutter_module:flutter_release:1.0")
     add("profileImplementation", "com.example.flutter_module:flutter_profile:1.0")
+}
+
+//ML
+dependencies {
+    implementation("androidx.compose.ui:ui-viewbinding:1.7.1")// Face features
+    implementation("com.google.mlkit:face-detection:16.1.7")
+
+    // Text features
+    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
 }
