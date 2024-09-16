@@ -64,6 +64,7 @@ internal fun AddTransactionBottomSheet(
     var buttonExpand by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     ModalBottomSheet(
+        modifier = Modifier.navigationBarsPadding(),
         onDismissRequest = {
             onCloseBottomSheet()
         },

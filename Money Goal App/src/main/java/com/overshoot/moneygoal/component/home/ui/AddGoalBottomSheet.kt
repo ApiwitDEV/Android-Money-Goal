@@ -46,6 +46,7 @@ internal fun AddGoalBottomSheet(
     var expand by remember { mutableStateOf(false) }
     var period by remember { mutableStateOf("") }
     ModalBottomSheet(
+        modifier = Modifier.navigationBarsPadding(),
         onDismissRequest = {
             onCloseBottomSheet()
         },
