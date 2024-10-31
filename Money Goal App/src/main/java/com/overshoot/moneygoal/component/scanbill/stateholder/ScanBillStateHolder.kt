@@ -17,6 +17,8 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -25,11 +27,17 @@ class ScanBillStateHolder(
     private val contentResolver: ContentResolver
 ) {
 
-    private val _image = mutableStateOf<Bitmap?>(null)
-    val image: State<Bitmap?> = _image
+    private val _image = MutableStateFlow<Bitmap?>(null)
+    val image: StateFlow<Bitmap?> = _image
+
+    private val _imageDimension = mutableStateOf<Pair<Int, Int>?>(null)
+    val imageDimension: State<Pair<Int, Int>?> = _imageDimension
 
     private val _textElement = MutableLiveData<Text.Element>()
     val textElement: LiveData<Text.Element> = _textElement
+
+    private val _text = MutableStateFlow("")
+    val text: StateFlow<String> = _text
 
     private val _clearOverlay = MutableLiveData<Unit>()
     val clearOverlay: LiveData<Unit> = _clearOverlay
@@ -39,6 +47,7 @@ class ScanBillStateHolder(
             if (uri != null) {
                 Log.d("PhotoPicker", "Selected URI: $uri")
                 _image.value = getBitmapFromUri(uri)
+                runTextRecognition()
             } else {
                 Log.d("PhotoPicker", "No media selected")
                 _image.value = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888)
@@ -46,6 +55,15 @@ class ScanBillStateHolder(
         }
 
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    fun loadCachePhoto(image: Bitmap?) {
+        _image.value = image
+        runTextRecognition()
+    }
+
+    fun setImageDimension(width: Int, height: Int) {
+        _imageDimension.value = Pair(width, height)
     }
 
     @Throws(IOException::class)
@@ -57,7 +75,7 @@ class ScanBillStateHolder(
         return image
     }
 
-    internal fun runTextRecognition() {
+    private fun runTextRecognition() {
         val  inputImage: Bitmap? = _image.value
         val image = inputImage?.let { InputImage.fromBitmap(it, 0) }
         val recognizer = TextRecognition.getClient(
@@ -75,6 +93,21 @@ class ScanBillStateHolder(
     }
 
     private fun processTextRecognitionResult(texts: Text) {
+        _clearOverlay.value = Unit
+        val blocks: List<Text.TextBlock> = texts.textBlocks
+        if (blocks.isEmpty()) {
+            _text.value = "No text found"
+        }
+        blocks.forEach { block ->
+            block.lines.forEach { line ->
+                line.elements.forEach { element ->
+                    _text.value = _text.value.plus(element.text)
+                }
+            }
+        }
+    }
+
+    private fun processTextRecognitionResultExample(texts: Text) {
         _clearOverlay.value = Unit
         val blocks: List<Text.TextBlock> = texts.textBlocks
         if (blocks.isEmpty()) {

@@ -3,14 +3,18 @@ package com.overshoot.moneygoal.component.transactionhistory.stateholder.viewmod
 import androidx.compose.runtime.IntState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.overshoot.domain.usecase.transaction.SubscribeTransactionUseCase
-import com.overshoot.moneygoal.BaseViewModel
 import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class TransactionHistoryViewModel(
     private val subscribeTransactionUseCase: SubscribeTransactionUseCase
-): BaseViewModel() {
+): ViewModel() {
 
     private val _transaction = mutableStateListOf<TransactionUIState>()
     val transaction: List<TransactionUIState> = _transaction
@@ -22,37 +26,35 @@ class TransactionHistoryViewModel(
     val expenseCount: IntState = _expenseCount
 
     fun subscribe() {
-        observeStreamingData(
-            action = {
-                subscribeTransactionUseCase()
-                    .catch {
-                        it.message
+        viewModelScope.launch(Dispatchers.IO) {
+            subscribeTransactionUseCase.invoke()
+                .catch {
+                    it.message
+                }
+                .map {
+                    it.map { item ->
+                        TransactionUIState(
+                            id = item.id,
+                            name = item.name,
+                            value = item.value,
+                            remark = item.remark,
+                            goalId = item.id,
+                            type = item.type,
+                            category = item.categoryName
+                        )
                     }
-            },
-            mapToUIState = {
-                it.map { item ->
-                    TransactionUIState(
-                        id = item.id,
-                        name = item.name,
-                        value = item.value,
-                        remark = item.remark,
-                        goalId = item.id,
-                        type = item.type,
-                        category = item.categoryName
-                    )
                 }
-            },
-            onDataReceived = {
-                _transaction.clear()
-                _transaction.addAll(it)
-                _incomeCount.intValue = it.count { transaction ->
-                    transaction.type == "Income"
+                .collect {
+                    _transaction.clear()
+                    _transaction.addAll(it)
+                    _incomeCount.intValue = it.count { transaction ->
+                        transaction.type == "Income"
+                    }
+                    _expenseCount.intValue = it.count {transaction ->
+                        transaction.type == "Expense"
+                    }
                 }
-                _expenseCount.intValue = it.count {transaction ->
-                    transaction.type == "Expense"
-                }
-            }
-        )
+        }
     }
 
 }

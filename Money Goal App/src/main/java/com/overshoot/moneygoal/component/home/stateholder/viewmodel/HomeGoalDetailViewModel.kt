@@ -1,31 +1,32 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
-import com.overshoot.data.repository.GoalRepository
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.overshoot.data.datasource.onFailure
+import com.overshoot.data.datasource.onSuccess
 import com.overshoot.domain.usecase.goal.GetGoalUseCase
 import com.overshoot.domain.usecase.goal.AddGoalUseCase
-import com.overshoot.moneygoal.BaseViewModel
 import com.overshoot.moneygoal.common.Period
-import com.overshoot.moneygoal.common.UIState
+import com.overshoot.moneygoal.component.home.uistatemodel.AddGoalResultUIState
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalPeriodItemUIState
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class HomeGoalDetailViewModel(
     private val getGoalUseCase: GetGoalUseCase,
-    private val addGoalUseCase: AddGoalUseCase,
-    private val goalRepository: GoalRepository
-): BaseViewModel() {
+    private val addGoalUseCase: AddGoalUseCase
+): ViewModel() {
 
-    init {
-        println()
-    }
+    private val _addGoalLoading = MutableStateFlow(false)
+    val addGoalLoading = _addGoalLoading.asStateFlow()
 
-    private var executeCount = 0
-
-    private val _addGoalState = MutableStateFlow(UIState.NO_STATE)
-    val addGoalState: StateFlow<UIState> = _addGoalState
+    private val _addGoalResult = MutableStateFlow<AddGoalResultUIState?>(null)
+    val addGoalResult = _addGoalResult.asStateFlow()
 
     private val _allGoal = MutableStateFlow<List<GoalItemUIState>>(mutableListOf())
     val allGoal: StateFlow<List<GoalItemUIState>> = _allGoal
@@ -33,155 +34,106 @@ class HomeGoalDetailViewModel(
     private val _goalPeriodList = MutableStateFlow<List<GoalPeriodItemUIState>>(listOf())
     val goalPeriodList: StateFlow<List<GoalPeriodItemUIState>> = _goalPeriodList
 
-    fun clearExecuteCount() {
-        executeCount = 0
-    }
-
     fun addGoal(
         goalName: String,
         goalObjective: String,
         period: String,
         targetValue: Double
     ) {
-        _addGoalState.value = UIState.LOADING
-        executeUseCase(
-            mapToUIState = {
-
-            },
-            action = {
-                delay(500)
-                addGoalUseCase.addGoal(
-                    goalName = goalName,
-                    goalObjective = goalObjective,
-                    period = period,
-                    targetValue = targetValue
-                )
-            },
-            onSuccess = {
-                _addGoalState.value = UIState.SUCCESS
-            },
-            onFailure = {
-                it
-                _addGoalState.value = UIState.FAILURE
-            },
-            onConnectingNotAvailable = {
-                _addGoalState.value = UIState.NO_INTERNET
-            }
-        )
+        viewModelScope.launch(Dispatchers.IO) {
+            _addGoalLoading.value = true
+            addGoalUseCase.addGoal(
+                goalName = goalName,
+                goalObjective = goalObjective,
+                period = period,
+                targetValue = targetValue
+            )
+                .onSuccess {
+                    _addGoalLoading.value = false
+                    _addGoalResult.value = AddGoalResultUIState.SUCCESS
+                }
+                .onFailure {
+                    _addGoalLoading.value = false
+                    _addGoalResult.value = AddGoalResultUIState.FAILURE
+                }
+        }
     }
 
-//    fun getAllGoal() {
-//        if (executeCount == 0) {
-//            executeUseCase(
-//                action = {
-//                    getGoalUseCase.getAllGoal()
-//                },
-//                mapToUIState = {
-//                    mutableListOf<GoalItemUIState>().apply {
-//                        it.forEach {
-//                            this.add(
-//                                GoalItemUIState(
-//                                    id = it.id,
-//                                    name = it.name?:"",
-//                                    isSuccess = true
-//                                )
-//                            )
-//                        }
-//                    }
-//                },
-//                onSuccess = {
-//                    _allGoal.value = it
-//                    executeCount += 1
-//                },
-//                onFailure = {
-//
-//                },
-//                onConnectingNotAvailable = {
-//
-//                }
-//            )
-//        }
-//    }
-
     fun observeAllGoal() {
-        observeStreamingData(
-            action = {
-                getGoalUseCase.getAllGoal()
-            },
-            mapToUIState = {
-                mutableListOf<GoalItemUIState>().apply {
-                    it.forEach {
-                        this.add(
-                            GoalItemUIState(
-                                id = it.id,
-                                name = it.name?:"",
-                                isSuccess = true,
-                                objective = it.objective?:"",
-                                target = it.target?:0.0,
-                                period = it.period?:""
+        viewModelScope.launch(Dispatchers.IO) {
+            getGoalUseCase.getAllGoal()
+                .map {
+                    mutableListOf<GoalItemUIState>().apply {
+                        it.forEach {
+                            this.add(
+                                GoalItemUIState(
+                                    id = it.id,
+                                    name = it.name?:"",
+                                    isSuccess = true,
+                                    objective = it.objective?:"",
+                                    target = it.target?:0.0,
+                                    period = it.period?:""
+                                )
                             )
-                        )
+                        }
                     }
                 }
-            },
-            onDataReceived = {
-                _allGoal.value = it
-            }
-        )
+                .collect {
+                    _allGoal.value = it
+                }
+        }
     }
 
     fun observeGoalPeriodList() {
-        observeStreamingData(
-            action = {
-                getGoalUseCase.getAllGoal()
-            },
-            mapToUIState = { goalList ->
-                val goalPeriodList = mutableListOf<GoalPeriodItemUIState>()
-                val x = goalList.count {
-                    it.period == Period.DAILY.value
-                }
-                val y = goalList.count {
-                    it.period == Period.WEEKLY.value
-                }
-                val z = goalList.count {
-                    it.period == Period.MONTHLY.value
-                }
-                goalPeriodList.add(
-                    GoalPeriodItemUIState(
-                        period = "All",
-                        count = x+y+z
-                    )
-                )
-                if (x != 0) {
+        viewModelScope.launch(Dispatchers.IO) {
+            getGoalUseCase.getAllGoal()
+                .map { goalList ->
+                    val goalPeriodList = mutableListOf<GoalPeriodItemUIState>()
+                    val x = goalList.count {
+                        it.period == Period.DAILY.value
+                    }
+                    val y = goalList.count {
+                        it.period == Period.WEEKLY.value
+                    }
+                    val z = goalList.count {
+                        it.period == Period.MONTHLY.value
+                    }
                     goalPeriodList.add(
                         GoalPeriodItemUIState(
-                            period = Period.DAILY.value,
-                            count = x
+                            period = "All",
+                            count = x+y+z
                         )
                     )
-                }
-                if (y != 0) {
-                    goalPeriodList.add(
-                        GoalPeriodItemUIState(
-                            period = Period.WEEKLY.value,
-                            count = y
+                    if (x != 0) {
+                        goalPeriodList.add(
+                            GoalPeriodItemUIState(
+                                period = Period.DAILY.value,
+                                count = x
+                            )
                         )
-                    )
-                }
-                if (z != 0) {
-                    goalPeriodList.add(
-                        GoalPeriodItemUIState(
-                        period = Period.MONTHLY.value,
-                        count = z
+                    }
+                    if (y != 0) {
+                        goalPeriodList.add(
+                            GoalPeriodItemUIState(
+                                period = Period.WEEKLY.value,
+                                count = y
+                            )
                         )
-                    )
+                    }
+                    if (z != 0) {
+                        goalPeriodList.add(
+                            GoalPeriodItemUIState(
+                                period = Period.MONTHLY.value,
+                                count = z
+                            )
+                        )
+                    }
+                    goalPeriodList
                 }
-                goalPeriodList
-            },
-            onDataReceived = {
-                _goalPeriodList.value = it
-            }
-        )
+                .collect {
+                    _goalPeriodList.value = it
+                }
+        }
     }
 
 }

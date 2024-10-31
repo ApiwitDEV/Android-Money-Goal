@@ -1,19 +1,18 @@
 package com.overshoot.domain.usecase.transaction
 
 import com.overshoot.data.datasource.ResultData
-import com.overshoot.data.datasource.local.transaction.TransactionEntity
+import com.overshoot.data.datasource.remote.model.transaction.PostTransactionResponse
 import com.overshoot.data.repository.TransactionRepository
-import kotlinx.coroutines.flow.Flow
 
 class AddTransactionUseCase(private val transactionRepository: TransactionRepository) {
 
-    suspend fun addTransaction(
+    suspend operator fun invoke(
         name: String,
         categoryId: Int,
         remark: String,
         type: String,
         value: Double
-    ): ResultData<Unit> {
+    ): ResultData<PostTransactionResponse> {
         return transactionRepository.addTransaction(
             name = name,
             categoryId = categoryId,
@@ -22,13 +21,4 @@ class AddTransactionUseCase(private val transactionRepository: TransactionReposi
             value = value
         )
     }
-
-    suspend fun subscribe(): Flow<TransactionEntity> {
-        return transactionRepository.subscribe()
-    }
-
-    suspend fun subscribe2(): Flow<List<TransactionEntity>> {
-        return transactionRepository.subscribe2()
-    }
-
 }

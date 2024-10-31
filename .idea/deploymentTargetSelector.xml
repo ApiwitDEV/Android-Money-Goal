@@ -4,10 +4,10 @@
     <selectionStates>
       <SelectionState runConfigName="Money_Goal_App">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-16T11:29:02.466499Z">
+        <DropdownSelection timestamp="2024-09-16T11:50:07.151744Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCTB1KSCTK" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=D1H122103000063" />
             </handle>
           </Target>
         </DropdownSelection>

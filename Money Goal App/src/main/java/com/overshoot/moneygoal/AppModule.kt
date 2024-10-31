@@ -5,6 +5,7 @@ import com.example.authentication.stateholder.SignUpViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
+import com.overshoot.moneygoal.component.scanbill.stateholder.ScanViewModel
 import com.overshoot.moneygoal.component.transactionhistory.stateholder.viewmodel.TransactionHistoryViewModel
 import com.overshoot.moneygoal.flutterinteractor.FlutterInterface
 import com.overshoot.moneygoal.flutterinteractor.FlutterMainExecutor
@@ -30,7 +31,8 @@ val appModule = module {
     viewModel { SignUpViewModel(get()) }
     viewModel { SignInViewModel(get(), get(), get(), get(), get()) }
     viewModel { NotificationViewModel() }
-    viewModel { HomeGoalDetailViewModel(get(), get(), get()) }
+    viewModel { HomeGoalDetailViewModel(get(), get()) }
     viewModel { HomeTransactionViewModel(get(), get()) }
     viewModel { TransactionHistoryViewModel(get()) }
+    viewModel { ScanViewModel() }
 }

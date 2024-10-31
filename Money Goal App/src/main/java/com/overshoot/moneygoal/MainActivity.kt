@@ -41,11 +41,7 @@ import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDeta
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
 import com.overshoot.moneygoal.flutterinteractor.FlutterInterface
-import com.overshoot.moneygoal.flutterinteractor.FlutterMainExecutor
-import com.overshoot.moneygoal.flutterinteractor.FlutterTestExecutor
 import com.overshoot.moneygoal.navigation.MainNavigationRoute
-import com.overshoot.moneygoal.navigation.NavigationHost
-import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -124,7 +120,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MoneyGoalTheme {
-
 
                 val appStateHolder = rememberAppState(
                     internetState = internetConnectivity.state

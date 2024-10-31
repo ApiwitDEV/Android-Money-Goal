@@ -22,5 +22,7 @@ data class TransactionEntity(
     @ColumnInfo("category_id")
     val categoryId: Int?,
     @ColumnInfo
-    val remark: String?
+    val remark: String?,
+    @ColumnInfo("is_exist_on_server")
+    val isExistOnServer: Boolean?
 )

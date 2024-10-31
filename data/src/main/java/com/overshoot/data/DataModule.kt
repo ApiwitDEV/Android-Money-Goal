@@ -18,7 +18,6 @@ import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.data.repository.GoalRepository
 import com.overshoot.data.repository.GoalRepositoryImpl
 import com.overshoot.data.repository.TransactionRepository
-import com.overshoot.data.repository.TransactionRepositoryImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
@@ -43,8 +42,12 @@ val dataModule = module {
             moneyGoalApiService = RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao(), get()))
         )
     }
-    single<TransactionRepository> {
-        TransactionRepositoryImpl(get(), GoalDatabase.getDatabase(androidContext()).transactionDao())
+    single {
+        TransactionRepository(
+            get(),
+            GoalDatabase.getDatabase(androidContext()).transactionDao(),
+            RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao(), get()))
+        )
     }
     single {
         CategoryRepository(GoalDatabase.getDatabase(androidContext()).categoryDao())

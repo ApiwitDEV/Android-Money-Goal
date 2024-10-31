@@ -41,8 +41,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.overshoot.moneygoal.R
-import com.overshoot.moneygoal.common.UIState
 import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.component.account.AccountContent
 import com.overshoot.moneygoal.component.home.HomeContentType
@@ -50,6 +50,7 @@ import com.overshoot.moneygoal.component.home.stateholder.GoalListStateHolder
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
+import com.overshoot.moneygoal.component.home.uistatemodel.AddGoalResultUIState
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalItemUIState
 import com.overshoot.moneygoal.component.home.uistatemodel.GoalPeriodItemUIState
 import com.overshoot.moneygoal.component.scanbill.ui.ScanContent
@@ -70,7 +71,8 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val showBottomSheet = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    var isLoading by remember { mutableStateOf(false) }
+    val isLoading = homeTransactionViewModel.addTransactionLoading.collectAsStateWithLifecycle().value ||
+            homeGoalDetailViewModel.addGoalLoading.collectAsStateWithLifecycle().value
     var sheetType by remember { mutableStateOf<SheetType?>(null) }
 
     val goalListStateHolder = remember { GoalListStateHolder() }
@@ -135,13 +137,11 @@ fun HomeScreen(
     )
 
     LaunchedEffect(key1 = Unit) {
-        homeGoalDetailViewModel.addGoalState.collect {
+        homeGoalDetailViewModel.addGoalResult.collect {
             when(it) {
-                UIState.NO_STATE -> { isLoading = false }
-                UIState.LOADING -> isLoading = true
-                UIState.SUCCESS -> {isLoading = false;Toast.makeText(context, "success", Toast.LENGTH_LONG).show()}
-                UIState.FAILURE -> {isLoading = false;Toast.makeText(context, "Failure", Toast.LENGTH_LONG).show()}
-                UIState.NO_INTERNET -> { isLoading = false }
+                AddGoalResultUIState.SUCCESS -> Toast.makeText(context, "Success", Toast.LENGTH_LONG).show()
+                AddGoalResultUIState.FAILURE -> Toast.makeText(context, "Failure", Toast.LENGTH_LONG).show()
+                null -> {}
             }
         }
     }
@@ -151,7 +151,7 @@ fun HomeScreen(
             SheetType.AddTransactionSheet -> {
                 AddTransactionBottomSheet(
                     sheetState = sheetState,
-                    categoryList = homeTransactionViewModel.category,
+                    categoryList = homeTransactionViewModel.category.collectAsStateWithLifecycle().value,
                     onCloseBottomSheet = {
                         scope.launch {
                             sheetState.hide()
@@ -190,10 +190,6 @@ fun HomeScreen(
         }
     }
 
-    if (homeTransactionViewModel.isLoading.value || homeGoalDetailViewModel.isLoading.value) {
-        LoadingDialog()
-    }
-
     if (isLoading) {
         LoadingDialog()
     }
@@ -203,7 +199,6 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeContent(
-    x: Int = 0,
     sheetState: SheetState,
     showBottomSheet: Boolean,
     selected: HomeContentType,
@@ -271,7 +266,7 @@ private fun HomeContent(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
-                ScanContent()
+                ScanContent(it)
             }
             AnimatedVisibility(
                 modifier = Modifier.padding(bottom = it.calculateBottomPadding()),
