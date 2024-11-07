@@ -1,6 +1,7 @@
 package com.overshoot.data.repository
 
 import android.icu.util.Calendar
+import android.os.Build
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.local.transaction.StreamingDataSource
 import com.overshoot.data.datasource.local.transaction.TransactionDao
@@ -12,6 +13,9 @@ import com.overshoot.data.datasource.remote.model.transaction.PostTransactionReq
 import com.overshoot.data.datasource.remote.model.transaction.PostTransactionResponse
 import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class TransactionRepository(
     private val fakeTransactionDataSource: StreamingDataSource<TransactionEntity>,
@@ -51,12 +55,21 @@ class TransactionRepository(
                 )
             )
         }.onFailure {
-            val time = Calendar.getInstance().time
+            val timestamp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                // Get the current date and time with the system's local time zone
+                val localTime = ZonedDateTime.now()
+                // Format it as an ISO 8601 string
+                localTime.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            } else {
+                val time = Calendar.getInstance().time
+                SimpleDateFormat("yyyy-MM-DDTHH:MM:SS.SSSZ", Locale.getDefault()).format(time)
+            }
+
             transactionDao.addTransaction(
                 TransactionEntity(
                     name = name,
-                    createAt = SimpleDateFormat("yyyy-MM-dd HH:mm").format(time),
-                    updateAt = SimpleDateFormat("yyyy-MM-dd HH:mm").format(time),
+                    createAt = timestamp,
+                    updateAt = timestamp,
                     categoryId = categoryId,
                     moneyAmount = value,
                     type = type,

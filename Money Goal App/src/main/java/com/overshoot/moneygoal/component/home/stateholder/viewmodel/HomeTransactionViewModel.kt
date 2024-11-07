@@ -1,7 +1,6 @@
 package com.overshoot.moneygoal.component.home.stateholder.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.overshoot.data.datasource.onFailure

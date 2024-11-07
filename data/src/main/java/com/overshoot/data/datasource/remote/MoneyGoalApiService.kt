@@ -26,11 +26,12 @@ interface MoneyGoalApiService {
     @POST("/widgets")
     suspend fun callWidget(): String
 
-    @GET("/info")
-    suspend fun getInfo(): Response<Employees>
 
     @GET("/unauthorizedTest")
     fun getUnauthorizedTest(): Call<PostGoalResponse>
+
+    @GET("/info")
+    suspend fun getInfo(): Response<Employees>
 
     @POST("/goals")
     suspend fun postGoal(@Body body: PostGoalRequestBody): Response<PostGoalResponse>
