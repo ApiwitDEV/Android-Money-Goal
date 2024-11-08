@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface GoalDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addGoal(goalEntity: GoalEntity)
 
     @Query("SELECT * FROM GOAL_TABLE")

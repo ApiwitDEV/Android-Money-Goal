@@ -1,4 +1,4 @@
-package com.overshoot.data.datasource.local.transaction
+package com.overshoot.data.datasource.local.category
 
 import androidx.room.Dao
 import androidx.room.Delete

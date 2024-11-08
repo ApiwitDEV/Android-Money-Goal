@@ -10,15 +10,14 @@ class FakeTransactionDataSource: StreamingDataSource<TransactionEntity> {
             delay(30000)
             onDataReceived(
                 TransactionEntity(
-                    id = i,
+                    id = i.toString(),
                     name = "",
                     type = "cost",
                     createAt = "",
                     updateAt = "",
                     moneyAmount = 30.0,
-                    categoryId = 0,
-                    remark = "",
-                    isExistOnServer = false
+                    categoryId = "",
+                    remark = ""
                     )
             )
             i++

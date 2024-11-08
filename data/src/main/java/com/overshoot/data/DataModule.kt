@@ -46,6 +46,7 @@ val dataModule = module {
         TransactionRepository(
             get(),
             GoalDatabase.getDatabase(androidContext()).transactionDao(),
+            GoalDatabase.getDatabase(androidContext()).temporaryTransactionDao(),
             RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao(), get()))
         )
     }

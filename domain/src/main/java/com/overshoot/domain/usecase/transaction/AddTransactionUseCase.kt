@@ -8,7 +8,7 @@ class AddTransactionUseCase(private val transactionRepository: TransactionReposi
 
     suspend operator fun invoke(
         name: String,
-        categoryId: Int,
+        categoryId: String,
         remark: String,
         type: String,
         value: Double

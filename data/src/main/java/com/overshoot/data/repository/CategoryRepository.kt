@@ -1,8 +1,8 @@
 package com.overshoot.data.repository
 
 import com.overshoot.data.datasource.ResultData
-import com.overshoot.data.datasource.local.transaction.CategoryDao
-import com.overshoot.data.datasource.local.transaction.CategoryEntity
+import com.overshoot.data.datasource.local.category.CategoryDao
+import com.overshoot.data.datasource.local.category.CategoryEntity
 import kotlinx.coroutines.flow.Flow
 
 class CategoryRepository(

@@ -49,7 +49,7 @@ class AuthenticationRepositoryImpl(
                                             )
                                         )
                                     }.join()
-                                    Log.d("response", async { moneyGoalApiService.getInfo().toString() }.await())
+                                    Log.d("response", moneyGoalApiService.getInfo().toString())
                                     trySend(Success(AuthResponse(message = "Success")))
                                 }
                             }

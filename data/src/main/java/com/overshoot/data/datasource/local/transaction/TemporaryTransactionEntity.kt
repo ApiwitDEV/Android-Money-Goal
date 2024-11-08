@@ -4,11 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "transaction_table")
-data class TransactionEntity(
-    @PrimaryKey
-    @ColumnInfo
-    val id: String,
+@Entity(tableName = "temporary_transaction_table")
+data class TemporaryTransactionEntity(
+    @ColumnInfo("running_number")
+    @PrimaryKey(autoGenerate = true)
+    val runningNumber: Int = 0,
     @ColumnInfo
     val name: String?,
     @ColumnInfo

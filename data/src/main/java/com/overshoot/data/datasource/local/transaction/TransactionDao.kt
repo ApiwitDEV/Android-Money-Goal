@@ -3,6 +3,7 @@ package com.overshoot.data.datasource.local.transaction
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
@@ -12,10 +13,10 @@ interface TransactionDao {
     @Query("SELECT * FROM transaction_table")
     fun getTransaction(): Flow<List<TransactionEntity>>
 
-    @Insert
-    fun addTransaction(transaction:TransactionEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addTransaction(transaction:TransactionEntity)
 
     @Delete
-    fun deleteTransaction(transaction:TransactionEntity)
+    suspend fun deleteTransaction(transaction:TransactionEntity)
 
 }

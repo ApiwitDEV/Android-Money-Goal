@@ -34,6 +34,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import com.overshoot.data.repository.AuthenticationRepository
+import com.overshoot.domain.usecase.initial.LoadAllInitialDataUseCase
 import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.navigation.NavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
@@ -58,6 +59,7 @@ class MainActivity : ComponentActivity() {
     private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
     private val signInViewModel by viewModel<SignInViewModel>()
     private val authenticationRepository by inject<AuthenticationRepository>()
+    private val loadAllInitialDataUseCase by inject<LoadAllInitialDataUseCase>()
     
     private fun askNotificationPermission() {
         when {
@@ -120,6 +122,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MoneyGoalTheme {
+
+                LaunchedEffect(null) {
+                    loadAllInitialDataUseCase.invoke()
+                }
 
                 val appStateHolder = rememberAppState(
                     internetState = internetConnectivity.state

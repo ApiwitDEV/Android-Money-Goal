@@ -26,6 +26,7 @@ class HomeTransactionViewModel(
     val addTransactionLoading = _addTransactionLoading.asStateFlow()
 
     fun addTransaction(transaction: AddTransactionData) {
+        _addTransactionLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             addTransactionUseCase.invoke(
                 name = transaction.name,
@@ -35,6 +36,7 @@ class HomeTransactionViewModel(
                 value = transaction.value
             )
                 .onSuccess {
+                    _addTransactionLoading.value = false
                     Log.d("add_transaction", it.toString())
                 }
                 .onFailure {
@@ -49,7 +51,7 @@ class HomeTransactionViewModel(
                 .onSuccess {
                     _categoryList.value = it.map { category ->
                         CategoryUIState(
-                            id = category.id,
+                            id = category.id?:"",
                             name = category.name?:""
                         )
                     }

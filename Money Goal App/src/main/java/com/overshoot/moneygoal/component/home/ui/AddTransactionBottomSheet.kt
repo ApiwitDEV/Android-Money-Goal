@@ -58,7 +58,7 @@ internal fun AddTransactionBottomSheet(
     var transactionName by remember { mutableStateOf("") }
     var transactionRemark by remember { mutableStateOf("") }
     var transactionValue by remember { mutableStateOf("") }
-    var selectedCategoryId by remember { mutableIntStateOf(0) }
+    var selectedCategoryId by remember { mutableStateOf("") }
     var selectedCategoryName by remember { mutableStateOf("") }
     var selected by remember { mutableStateOf("Expense") }
     var buttonExpand by remember { mutableStateOf(false) }
@@ -182,7 +182,7 @@ internal fun AddTransactionBottomSheet(
                         if (
                             transactionName.isNotBlank() &&
                             transactionValue.isNotBlank() &&
-                            selectedCategoryId != 0 &&
+                            selectedCategoryId != "" &&
                             selectedCategoryName.isNotBlank()
                             ) {
                             onAddTransaction(

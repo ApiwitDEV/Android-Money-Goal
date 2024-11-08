@@ -5,6 +5,7 @@ import com.overshoot.data.datasource.remote.model.goal.PostGoalRequestBody
 import com.overshoot.data.datasource.remote.model.goal.PostGoalResponse
 import com.overshoot.data.datasource.remote.model.something.RequestBody
 import com.overshoot.data.datasource.remote.model.something.Something
+import com.overshoot.data.datasource.remote.model.transaction.GetTransactionsResponse
 import com.overshoot.data.datasource.remote.model.transaction.PostTransactionRequestBody
 import com.overshoot.data.datasource.remote.model.transaction.PostTransactionResponse
 import retrofit2.Call
@@ -30,7 +31,7 @@ interface MoneyGoalApiService {
     @GET("/unauthorizedTest")
     fun getUnauthorizedTest(): Call<PostGoalResponse>
 
-    @GET("/info")
+    @GET("/user")
     suspend fun getInfo(): Response<Employees>
 
     @POST("/goals")
@@ -38,5 +39,8 @@ interface MoneyGoalApiService {
 
     @POST("/transaction")
     suspend fun postTransaction(@Body body: PostTransactionRequestBody): Response<PostTransactionResponse>
+
+    @GET("/transaction")
+    suspend fun getTransactions(): Response<GetTransactionsResponse>
 
 }

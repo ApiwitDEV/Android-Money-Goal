@@ -24,7 +24,7 @@ class SubscribeTransactionUseCase(
                         value = transaction.moneyAmount,
                         remark = transaction.remark,
                         goalId = 0,
-                        categoryId = transaction.categoryId?:0,
+                        categoryId = transaction.categoryId,
                         categoryName = categoryList.find { category ->
                             category.id == transaction.categoryId
                         }?.name.toString()

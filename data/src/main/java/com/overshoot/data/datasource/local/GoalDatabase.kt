@@ -7,8 +7,10 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.overshoot.data.datasource.local.goal.GoalDao
 import com.overshoot.data.datasource.local.goal.GoalEntity
-import com.overshoot.data.datasource.local.transaction.CategoryDao
-import com.overshoot.data.datasource.local.transaction.CategoryEntity
+import com.overshoot.data.datasource.local.category.CategoryDao
+import com.overshoot.data.datasource.local.category.CategoryEntity
+import com.overshoot.data.datasource.local.transaction.TemporaryTransactionDao
+import com.overshoot.data.datasource.local.transaction.TemporaryTransactionEntity
 import com.overshoot.data.datasource.local.transaction.TransactionDao
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
 import kotlinx.coroutines.CoroutineScope
@@ -16,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Database(
-    entities = [GoalEntity::class, TransactionEntity::class, CategoryEntity::class],
+    entities = [GoalEntity::class, TransactionEntity::class, TemporaryTransactionEntity::class, CategoryEntity::class],
     version = 1,
     exportSchema = false
 )
@@ -24,6 +26,7 @@ abstract class GoalDatabase : RoomDatabase() {
 
     abstract fun goalDao(): GoalDao
     abstract fun transactionDao(): TransactionDao
+    abstract fun temporaryTransactionDao(): TemporaryTransactionDao
     abstract fun categoryDao(): CategoryDao
 
     companion object {
@@ -45,22 +48,28 @@ abstract class GoalDatabase : RoomDatabase() {
                                     CoroutineScope(Dispatchers.IO).launch {
                                         INSTANCE?.categoryDao()?.addCategory(
                                             CategoryEntity(
-                                            id = 0,
+                                            id = "1",
                                             name = "Food"
                                             )
                                         )
-                                        INSTANCE?.categoryDao()?.addCategory(CategoryEntity(
-                                            id = 0,
+                                        INSTANCE?.categoryDao()?.addCategory(
+                                            CategoryEntity(
+                                            id = "2",
                                             name = "Salary"
-                                        ))
-                                        INSTANCE?.categoryDao()?.addCategory(CategoryEntity(
-                                            id = 0,
+                                        )
+                                        )
+                                        INSTANCE?.categoryDao()?.addCategory(
+                                            CategoryEntity(
+                                            id = "3",
                                             name = "Dept"
-                                        ))
-                                        INSTANCE?.categoryDao()?.addCategory(CategoryEntity(
-                                            id = 0,
+                                        )
+                                        )
+                                        INSTANCE?.categoryDao()?.addCategory(
+                                            CategoryEntity(
+                                            id = "4",
                                             name = "Subscription"
-                                        ))
+                                        )
+                                        )
                                     }
                                 }
                             }

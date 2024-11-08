@@ -34,11 +34,10 @@ class TransactionHistoryViewModel(
                 .map {
                     it.map { item ->
                         TransactionUIState(
-                            id = item.id,
                             name = item.name,
                             value = item.value,
                             remark = item.remark,
-                            goalId = item.id,
+                            goalId = 0,
                             type = item.type,
                             category = item.categoryName
                         )

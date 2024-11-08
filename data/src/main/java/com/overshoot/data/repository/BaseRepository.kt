@@ -18,7 +18,7 @@ open class BaseRepository {
 
     private val internetConnectivity by inject<InternetConnectivity>(InternetConnectivity::class.java)
 
-    suspend fun <T: Any> callDB(
+    protected suspend fun <T: Any> callDB(
         context: CoroutineContext = Dispatchers.IO,
         action: suspend CoroutineScope.() -> T
     ): ResultData<T> {
@@ -33,7 +33,7 @@ open class BaseRepository {
             .await()
     }
 
-    suspend fun <T: Any> callRestApi(
+    protected suspend fun <T: Any> callRestApi(
         action: suspend CoroutineScope.() -> Response<T>
     ): ResultData<T> {
         return if (internetConnectivity.isAvailable()) {

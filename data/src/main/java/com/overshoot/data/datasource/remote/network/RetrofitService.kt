@@ -15,7 +15,7 @@ object RetrofitService {
         if (moneyGoalApiService == null) {
             moneyGoalApiService = Retrofit.Builder()
                 .client(httpClient)
-                .baseUrl("https://moneygoalapi-nkgrik3dra-uc.a.run.app")
+                .baseUrl("https://money-596910917282.us-central1.run.app")
                 .addConverterFactory(ScalarsConverterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addConverterFactory(MoshiConverterFactory.create())
