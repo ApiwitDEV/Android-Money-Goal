@@ -13,7 +13,13 @@ import com.overshoot.data.datasource.onSuccess
 import com.overshoot.data.datasource.remote.MoneyGoalApiService
 import com.overshoot.data.datasource.remote.model.transaction.PostTransactionRequestBody
 import com.overshoot.data.datasource.remote.model.transaction.PostTransactionResponse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -26,6 +32,9 @@ class TransactionRepository(
     private val moneyGoalApiService: MoneyGoalApiService
 ): BaseRepository() {
 
+    private val _isLoadTransaction = MutableSharedFlow<Boolean>(1)
+    val isLoadTransaction: SharedFlow<Boolean> = _isLoadTransaction.asSharedFlow()
+
     suspend fun addTransaction(
         name: String,
         categoryId: String,
@@ -33,31 +42,34 @@ class TransactionRepository(
         type: String,
         value: Double
     ): ResultData<PostTransactionResponse> {
-        Result
+        _isLoadTransaction.emit(true)
         return callRestApi {
             moneyGoalApiService.postTransaction(
                 PostTransactionRequestBody(
-                    name,
-                    categoryId,
-                    remark,
-                    type,
-                    value
+                    name = name,
+                    categoryId = categoryId,
+                    remark = remark,
+                    type = type,
+                    moneyAmount = value
                 )
             )
         }.onSuccess {
-            val responseData = it.transaction
-            transactionDao.addTransaction(
-                TransactionEntity(
-                    id = responseData?.id?:"",
-                    name = responseData?.name,
-                    createAt = responseData?.createAt,
-                    updateAt = responseData?.updateAt,
-                    categoryId = responseData?.categoryId,
-                    moneyAmount = responseData?.moneyAmount,
-                    type = responseData?.type,
-                    remark = responseData?.remark
+            CoroutineScope(Dispatchers.Default).launch {
+                val responseData = it.transaction
+                transactionDao.addTransaction(
+                    TransactionEntity(
+                        id = responseData?.id?:"",
+                        name = responseData?.name,
+                        createAt = responseData?.createAt,
+                        updateAt = responseData?.updateAt,
+                        categoryId = responseData?.categoryId,
+                        moneyAmount = responseData?.moneyAmount,
+                        type = responseData?.type,
+                        remark = responseData?.remark
+                    )
                 )
-            )
+                _isLoadTransaction.emit(false)
+            }
         }.onFailure {
             val timestamp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 // Get the current date and time with the system's local time zone
@@ -80,10 +92,12 @@ class TransactionRepository(
                     remark = remark
                 )
             )
+            _isLoadTransaction.emit(false)
         }
     }
 
     suspend fun getAllTransaction() {
+        _isLoadTransaction.emit(true)
         callRestApi { moneyGoalApiService.getTransactions() }
             .onSuccess {
                 it.transactions.forEach { transaction ->
@@ -100,6 +114,7 @@ class TransactionRepository(
                         )
                     )
                 }
+                _isLoadTransaction.emit(false)
             }
     }
 

@@ -35,11 +35,12 @@ class TransactionHistoryViewModel(
                     it.map { item ->
                         TransactionUIState(
                             name = item.name,
-                            value = item.value,
+                            value = item.moneyAmount,
                             remark = item.remark,
                             goalId = 0,
                             type = item.type,
-                            category = item.categoryName
+                            category = item.categoryName,
+                            isLoading = item.isLoading
                         )
                     }
                 }
@@ -54,6 +55,10 @@ class TransactionHistoryViewModel(
                     }
                 }
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
     }
 
 }

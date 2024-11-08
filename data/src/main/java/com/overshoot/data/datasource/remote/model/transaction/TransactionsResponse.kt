@@ -1,10 +1,10 @@
 package com.overshoot.data.datasource.remote.model.transaction
 
-import com.squareup.moshi.Json
+import com.google.gson.annotations.SerializedName
 
 data class GetTransactionsResponse(
-    @field:Json(name = "transactions")
+    @SerializedName("transactions")
     val transactions: List<TransactionData>,
-    @field:Json(name = "message")
+    @SerializedName("message")
     val message: String
 )

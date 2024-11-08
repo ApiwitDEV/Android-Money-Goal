@@ -14,20 +14,23 @@ class SubscribeTransactionUseCase(
     operator fun invoke(): Flow<List<TransactionResult>> {
         return combine(
             flow = transactionRepository.subscribe(),
-            flow2 = categoryRepository.subscribeCategory(),
-            transform = { transactionList, categoryList ->
+            flow2 = transactionRepository.isLoadTransaction,
+            flow3 = categoryRepository.subscribeCategory(),
+            flow4 = categoryRepository.isLoadCategory,
+            transform = { transactionList, isLoadTransaction, categoryList, isLoadCategory ->
                 transactionList.map { transaction ->
                     TransactionResult(
                         id = transaction.id,
                         name = transaction.name,
                         type = transaction.type,
-                        value = transaction.moneyAmount,
+                        moneyAmount = transaction.moneyAmount,
                         remark = transaction.remark,
                         goalId = 0,
                         categoryId = transaction.categoryId,
                         categoryName = categoryList.find { category ->
                             category.id == transaction.categoryId
-                        }?.name.toString()
+                        }?.name.toString(),
+                        isLoading = isLoadTransaction || isLoadCategory
                     )
                 }
             }

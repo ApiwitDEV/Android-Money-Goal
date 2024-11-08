@@ -123,10 +123,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyGoalTheme {
 
-                LaunchedEffect(null) {
-                    loadAllInitialDataUseCase.invoke()
-                }
-
                 val appStateHolder = rememberAppState(
                     internetState = internetConnectivity.state
                 )

@@ -3,6 +3,7 @@ package com.overshoot.data.datasource.local.category
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
@@ -12,11 +13,11 @@ interface CategoryDao {
     fun subscribeCategory(): Flow<List<CategoryEntity>>
 
     @Query("SELECT * FROM category_table")
-    fun getAllCategory(): List<CategoryEntity>
+    suspend fun getAllCategory(): List<CategoryEntity>
 
-    @Insert
-    fun addCategory(category: CategoryEntity)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addCategory(category: CategoryEntity)
 
     @Delete
-    fun deleteCategory(category: CategoryEntity)
+    suspend fun deleteCategory(category: CategoryEntity)
 }

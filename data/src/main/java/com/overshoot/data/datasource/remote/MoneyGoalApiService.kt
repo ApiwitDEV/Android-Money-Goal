@@ -1,5 +1,6 @@
 package com.overshoot.data.datasource.remote
 
+import com.overshoot.data.datasource.remote.model.categories.GetCategoriesResponse
 import com.overshoot.data.datasource.remote.model.employees.Employees
 import com.overshoot.data.datasource.remote.model.goal.PostGoalRequestBody
 import com.overshoot.data.datasource.remote.model.goal.PostGoalResponse
@@ -27,7 +28,6 @@ interface MoneyGoalApiService {
     @POST("/widgets")
     suspend fun callWidget(): String
 
-
     @GET("/unauthorizedTest")
     fun getUnauthorizedTest(): Call<PostGoalResponse>
 
@@ -37,10 +37,13 @@ interface MoneyGoalApiService {
     @POST("/goals")
     suspend fun postGoal(@Body body: PostGoalRequestBody): Response<PostGoalResponse>
 
-    @POST("/transaction")
+    @POST("/transactions")
     suspend fun postTransaction(@Body body: PostTransactionRequestBody): Response<PostTransactionResponse>
 
-    @GET("/transaction")
+    @GET("/transactions")
     suspend fun getTransactions(): Response<GetTransactionsResponse>
+
+    @GET("/categories")
+    suspend fun getCategories(): Response<GetCategoriesResponse>
 
 }

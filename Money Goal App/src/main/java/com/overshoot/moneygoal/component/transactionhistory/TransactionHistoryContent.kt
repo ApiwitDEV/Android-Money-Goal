@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.overshoot.moneygoal.R
+import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.component.home.uistatemodel.TransactionUIState
 import com.overshoot.moneygoal.component.transactionhistory.stateholder.viewmodel.TransactionHistoryViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -90,41 +91,46 @@ fun TransactionHistoryContent() {
 
 @Composable
 private fun TransactionItem(item: TransactionUIState) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "${item.name}")
-                Text(
-                    text = "${item.value} ${stringResource(id = R.string.money_unit)}",
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = item.category.toString())
-                Text(
-                    text = "${item.type}",
-                    color = if (item.type == "Income") Color.Green else Color.Red
-                )
-            }
-            if (!item.remark.isNullOrBlank()) {
-                Text(
-                    text = "* "+item.remark,
-                    color = Color.Gray
-                )
+    if (item.isLoading == true) {
+        LoadingDialog()
+    }
+    else {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+        ) {
+            Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = "${item.name}")
+                    Text(
+                        text = "${item.value} ${stringResource(id = R.string.money_unit)}",
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(text = item.category.toString())
+                    Text(
+                        text = "${item.type}",
+                        color = if (item.type == "Income") Color.Green else Color.Red
+                    )
+                }
+                if (!item.remark.isNullOrBlank()) {
+                    Text(
+                        text = "* "+item.remark,
+                        color = Color.Gray
+                    )
+                }
             }
         }
     }

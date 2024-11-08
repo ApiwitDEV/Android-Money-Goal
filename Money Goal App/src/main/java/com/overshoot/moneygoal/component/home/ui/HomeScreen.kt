@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.overshoot.domain.usecase.initial.LoadAllInitialDataUseCase
 import com.overshoot.moneygoal.R
 import com.overshoot.moneygoal.common.ui.LoadingDialog
 import com.overshoot.moneygoal.component.account.AccountContent
@@ -56,6 +57,7 @@ import com.overshoot.moneygoal.component.home.uistatemodel.GoalPeriodItemUIState
 import com.overshoot.moneygoal.component.scanbill.ui.ScanContent
 import com.overshoot.moneygoal.component.transactionhistory.TransactionHistoryContent
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +68,7 @@ fun HomeScreen(
     onBackPressed: () -> Unit,
     onSignOut: () -> Unit
 ) {
+    val loadAllInitialDataUseCase = koinInject<LoadAllInitialDataUseCase>()
     val selected = remember { mutableStateOf(HomeContentType.HomeContent) }
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
@@ -79,6 +82,10 @@ fun HomeScreen(
 
     BackHandler {
         onBackPressed()
+    }
+
+    LaunchedEffect(null) {
+        loadAllInitialDataUseCase.invoke()
     }
 
     LaunchedEffect(key1 = null) {

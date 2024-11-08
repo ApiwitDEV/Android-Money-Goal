@@ -51,6 +51,9 @@ val dataModule = module {
         )
     }
     single {
-        CategoryRepository(GoalDatabase.getDatabase(androidContext()).categoryDao())
+        CategoryRepository(
+            GoalDatabase.getDatabase(androidContext()).categoryDao(),
+            RetrofitService.getMoneyGoalApiService(HttpClient.getClient(UserDatabase.getDatabase(androidContext()).getUserInfoDao(), get()))
+        )
     }
 }

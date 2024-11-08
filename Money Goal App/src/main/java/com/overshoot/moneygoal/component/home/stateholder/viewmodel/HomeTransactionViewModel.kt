@@ -9,9 +9,11 @@ import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.domain.usecase.transaction.AddTransactionUseCase
 import com.overshoot.moneygoal.component.home.uistatemodel.CategoryUIState
 import com.overshoot.moneygoal.component.home.upstreamdatamodel.AddTransactionData
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class HomeTransactionViewModel(
@@ -47,8 +49,8 @@ class HomeTransactionViewModel(
 
     fun getAllCategory() {
         viewModelScope.launch(Dispatchers.IO) {
-            categoryRepository.getAllCategory()
-                .onSuccess {
+            categoryRepository.subscribeCategory()
+                .collectLatest {
                     _categoryList.value = it.map { category ->
                         CategoryUIState(
                             id = category.id?:"",
@@ -56,7 +58,6 @@ class HomeTransactionViewModel(
                         )
                     }
                 }
-                .onFailure {  }
         }
     }
 

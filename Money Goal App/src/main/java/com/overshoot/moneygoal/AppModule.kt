@@ -12,6 +12,7 @@ import com.overshoot.moneygoal.flutterinteractor.FlutterMainExecutor
 import com.overshoot.moneygoal.flutterinteractor.FlutterTestExecutor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 
@@ -29,7 +30,7 @@ val appModule = module {
         )
     }
     viewModel { SignUpViewModel(get()) }
-    viewModel { SignInViewModel(get(), get(), get(), get(), get()) }
+    viewModelOf(::SignInViewModel)
     viewModel { NotificationViewModel() }
     viewModel { HomeGoalDetailViewModel(get(), get()) }
     viewModel { HomeTransactionViewModel(get(), get()) }

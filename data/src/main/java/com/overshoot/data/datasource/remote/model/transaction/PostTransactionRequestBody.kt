@@ -8,5 +8,6 @@ data class PostTransactionRequestBody(
     val categoryId: String,
     val remark: String,
     val type: String,
-    val value: Double
+    @SerializedName("money_amount")
+    val moneyAmount: Double
 )

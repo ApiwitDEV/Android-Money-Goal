@@ -44,34 +44,34 @@ abstract class GoalDatabase : RoomDatabase() {
                         callback = object : Callback() {
                             override fun onCreate(db: SupportSQLiteDatabase) {
                                 super.onCreate(db)
-                                INSTANCE?.let {
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        INSTANCE?.categoryDao()?.addCategory(
-                                            CategoryEntity(
-                                            id = "1",
-                                            name = "Food"
-                                            )
-                                        )
-                                        INSTANCE?.categoryDao()?.addCategory(
-                                            CategoryEntity(
-                                            id = "2",
-                                            name = "Salary"
-                                        )
-                                        )
-                                        INSTANCE?.categoryDao()?.addCategory(
-                                            CategoryEntity(
-                                            id = "3",
-                                            name = "Dept"
-                                        )
-                                        )
-                                        INSTANCE?.categoryDao()?.addCategory(
-                                            CategoryEntity(
-                                            id = "4",
-                                            name = "Subscription"
-                                        )
-                                        )
-                                    }
-                                }
+//                                INSTANCE?.let {
+//                                    CoroutineScope(Dispatchers.IO).launch {
+//                                        INSTANCE?.categoryDao()?.addCategory(
+//                                            CategoryEntity(
+//                                            id = "1",
+//                                            name = "Food"
+//                                            )
+//                                        )
+//                                        INSTANCE?.categoryDao()?.addCategory(
+//                                            CategoryEntity(
+//                                            id = "2",
+//                                            name = "Salary"
+//                                        )
+//                                        )
+//                                        INSTANCE?.categoryDao()?.addCategory(
+//                                            CategoryEntity(
+//                                            id = "3",
+//                                            name = "Dept"
+//                                        )
+//                                        )
+//                                        INSTANCE?.categoryDao()?.addCategory(
+//                                            CategoryEntity(
+//                                            id = "4",
+//                                            name = "Subscription"
+//                                        )
+//                                        )
+//                                    }
+//                                }
                             }
 
                             override fun onOpen(db: SupportSQLiteDatabase) {

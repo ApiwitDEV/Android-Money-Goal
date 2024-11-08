@@ -6,5 +6,6 @@ data class TransactionUIState(
     val value: Double?,
     val remark: String?,
     val goalId: Int?,
-    val category: String?
+    val category: String?,
+    val isLoading: Boolean?
 )
