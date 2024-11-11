@@ -11,7 +11,6 @@ import com.overshoot.data.datasource.remote.MoneyGoalApiService
 import com.overshoot.data.datasource.remote.model.authentication.AuthenticationService
 import com.overshoot.data.datasource.remote.model.authentication.model.AuthResponse
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

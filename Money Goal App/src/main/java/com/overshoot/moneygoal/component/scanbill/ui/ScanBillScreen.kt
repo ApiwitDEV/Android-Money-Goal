@@ -2,10 +2,10 @@ package com.overshoot.moneygoal.component.scanbill.ui
 
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
@@ -31,7 +31,7 @@ import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
-fun ScanContent(paddingValues: PaddingValues) {
+fun ScanBillScreen() {
     val viewModel = koinViewModel<ScanViewModel>()
     val activityResult = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     val context = LocalContext.current
@@ -48,7 +48,7 @@ fun ScanContent(paddingValues: PaddingValues) {
         stateHolder?.loadCachePhoto(viewModel.loadCollectedImage())
     }
     Scaffold(
-        modifier = Modifier.padding(bottom = paddingValues.calculateBottomPadding()),
+        modifier = Modifier.systemBarsPadding(),
         floatingActionButton = {
             FloatingActionButton(onClick = { stateHolder?.choosePhoto() }) {
                 Text(text = "Choose Photo")

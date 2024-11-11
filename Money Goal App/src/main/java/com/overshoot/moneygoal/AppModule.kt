@@ -2,6 +2,7 @@ package com.overshoot.moneygoal
 
 import com.example.authentication.stateholder.SignInViewModel
 import com.example.authentication.stateholder.SignUpViewModel
+import com.overshoot.moneygoal.component.account.stateholder.AccountViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
@@ -34,6 +35,7 @@ val appModule = module {
     viewModel { NotificationViewModel() }
     viewModel { HomeGoalDetailViewModel(get(), get()) }
     viewModel { HomeTransactionViewModel(get(), get()) }
-    viewModel { TransactionHistoryViewModel(get()) }
+    viewModelOf(::TransactionHistoryViewModel)
     viewModel { ScanViewModel() }
+    viewModelOf(::AccountViewModel)
 }

@@ -33,16 +33,12 @@ import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
-import com.overshoot.data.repository.AuthenticationRepository
-import com.overshoot.domain.usecase.initial.LoadAllInitialDataUseCase
 import com.overshoot.moneygoal.common.ui.LoadingDialog
-import com.overshoot.moneygoal.navigation.NavigationHost
+import com.overshoot.moneygoal.navigation.authentication.AuthenticationNavigationHost
 import com.overshoot.moneygoal.theme.MoneyGoalTheme
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
-import com.overshoot.moneygoal.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoal.component.notification.NotificationViewModel
 import com.overshoot.moneygoal.flutterinteractor.FlutterInterface
-import com.overshoot.moneygoal.navigation.MainNavigationRoute
+import com.overshoot.moneygoal.navigation.authentication.AuthenticationNavigationRoute
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -55,11 +51,7 @@ class MainActivity : ComponentActivity() {
     private val flutterTestExecutor by inject<FlutterInterface>(qualifier = qualifier("test"))
 
     private val notificationViewModel by viewModel<NotificationViewModel>()
-    private val homeGoalDetailViewModel by viewModel<HomeGoalDetailViewModel>()
-    private val homeTransactionViewModel by viewModel<HomeTransactionViewModel>()
     private val signInViewModel by viewModel<SignInViewModel>()
-    private val authenticationRepository by inject<AuthenticationRepository>()
-    private val loadAllInitialDataUseCase by inject<LoadAllInitialDataUseCase>()
     
     private fun askNotificationPermission() {
         when {
@@ -127,15 +119,9 @@ class MainActivity : ComponentActivity() {
                     internetState = internetConnectivity.state
                 )
 
-                NavigationHost(
+                AuthenticationNavigationHost(
                     appStateHolder = appStateHolder,
                     signInViewModel = signInViewModel,
-                    homeGoalDetailViewModel = homeGoalDetailViewModel,
-                    homeTransactionViewModel = homeTransactionViewModel,
-                    onSignOut = {
-                        authenticationRepository.logout()
-                        appStateHolder.navigateTo(MainNavigationRoute.Login)
-                    },
                     onCloseApp = {
                         finish()
                     },
@@ -146,7 +132,7 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(key1 = Unit) {
                     signInViewModel.isLoginSuccess.asFlow().collect {
-                        appStateHolder.navigateTo(MainNavigationRoute.HomeScreen)
+                        appStateHolder.clearBackStackAndNavigateTo(AuthenticationNavigationRoute.Main)
                     }
                 }
 

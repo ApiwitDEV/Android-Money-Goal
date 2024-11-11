@@ -18,4 +18,7 @@ interface TemporaryTransactionDao {
     @Delete
     suspend fun deleteTemporaryTransaction(temporaryTransaction: TemporaryTransactionEntity)
 
+    @Query("DELETE FROM temporary_transaction_table")
+    suspend fun deleteAll()
+
 }

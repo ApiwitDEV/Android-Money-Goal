@@ -13,9 +13,6 @@ import com.overshoot.data.datasource.local.transaction.TemporaryTransactionDao
 import com.overshoot.data.datasource.local.transaction.TemporaryTransactionEntity
 import com.overshoot.data.datasource.local.transaction.TransactionDao
 import com.overshoot.data.datasource.local.transaction.TransactionEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Database(
     entities = [GoalEntity::class, TransactionEntity::class, TemporaryTransactionEntity::class, CategoryEntity::class],

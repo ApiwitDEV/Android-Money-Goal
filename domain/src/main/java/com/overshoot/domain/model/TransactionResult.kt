@@ -8,6 +8,5 @@ data class TransactionResult(
     val remark: String?,
     val goalId: Int?,
     val categoryId: String?,
-    val categoryName: String?,
-    val isLoading: Boolean? = false
+    val categoryName: String?
 )

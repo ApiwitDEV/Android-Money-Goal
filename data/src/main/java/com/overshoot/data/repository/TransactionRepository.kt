@@ -32,9 +32,6 @@ class TransactionRepository(
     private val moneyGoalApiService: MoneyGoalApiService
 ): BaseRepository() {
 
-    private val _isLoadTransaction = MutableSharedFlow<Boolean>(1)
-    val isLoadTransaction: SharedFlow<Boolean> = _isLoadTransaction.asSharedFlow()
-
     suspend fun addTransaction(
         name: String,
         categoryId: String,
@@ -42,7 +39,6 @@ class TransactionRepository(
         type: String,
         value: Double
     ): ResultData<PostTransactionResponse> {
-        _isLoadTransaction.emit(true)
         return callRestApi {
             moneyGoalApiService.postTransaction(
                 PostTransactionRequestBody(
@@ -68,7 +64,6 @@ class TransactionRepository(
                         remark = responseData?.remark
                     )
                 )
-                _isLoadTransaction.emit(false)
             }
         }.onFailure {
             val timestamp = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -81,45 +76,58 @@ class TransactionRepository(
                 SimpleDateFormat("yyyy-MM-DDTHH:MM:SS.SSSZ", Locale.getDefault()).format(time)
             }
 
-            temporaryTransactionDao.addTemporaryTransaction(
-                TemporaryTransactionEntity(
-                    name = name,
-                    createAt = timestamp,
-                    updateAt = timestamp,
-                    categoryId = categoryId,
-                    moneyAmount = value,
-                    type = type,
-                    remark = remark
+            CoroutineScope(Dispatchers.Default).launch {
+                temporaryTransactionDao.addTemporaryTransaction(
+                    TemporaryTransactionEntity(
+                        name = name,
+                        createAt = timestamp,
+                        updateAt = timestamp,
+                        categoryId = categoryId,
+                        moneyAmount = value,
+                        type = type,
+                        remark = remark
+                    )
                 )
-            )
-            _isLoadTransaction.emit(false)
+            }
         }
     }
 
     suspend fun getAllTransaction() {
-        _isLoadTransaction.emit(true)
         callRestApi { moneyGoalApiService.getTransactions() }
             .onSuccess {
-                it.transactions.forEach { transaction ->
-                    transactionDao.addTransaction(
-                        TransactionEntity(
-                            id = transaction.id,
-                            name = transaction.name,
-                            createAt = transaction.createAt,
-                            updateAt = transaction.updateAt,
-                            categoryId = transaction.categoryId,
-                            moneyAmount = transaction.moneyAmount,
-                            type = transaction.type,
-                            remark = transaction.remark
+                CoroutineScope(Dispatchers.Default).launch {
+                    it.transactions.forEach { transaction ->
+                        transactionDao.addTransaction(
+                            TransactionEntity(
+                                id = transaction.id,
+                                name = transaction.name,
+                                createAt = transaction.createAt,
+                                updateAt = transaction.updateAt,
+                                categoryId = transaction.categoryId,
+                                moneyAmount = transaction.moneyAmount,
+                                type = transaction.type,
+                                remark = transaction.remark
+                            )
                         )
-                    )
+                    }
                 }
-                _isLoadTransaction.emit(false)
+            }
+            .onFailure {
             }
     }
 
     fun subscribe(): Flow<List<TransactionEntity>> {
         return transactionDao.getTransaction()
+    }
+
+    suspend fun deleteAllTransactions() {
+        transactionDao.deleteAll()
+    }
+
+    suspend fun deleteTransactions(transactionIds: List<String>): ResultData<String> {
+        return callRestApi {
+            moneyGoalApiService.deleteTransactions(transactionIds)
+        }
     }
 
 //    override suspend fun subscribe(): Flow<TransactionEntity> {

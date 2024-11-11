@@ -18,6 +18,7 @@ import com.google.firebase.ktx.Firebase
 import com.overshoot.data.datasource.Failure
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.Success
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import java.util.concurrent.TimeUnit
@@ -40,7 +41,7 @@ class AuthenticationServiceImpl: AuthenticationService {
                 trySend(Failure(message = ""))
             }
         awaitClose {
-            close()
+            cancel()
         }
     }
 

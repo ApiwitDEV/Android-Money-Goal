@@ -15,4 +15,7 @@ interface GoalDao {
     @Query("SELECT * FROM GOAL_TABLE")
     fun getGoal(): Flow<List<GoalEntity>>
 
+    @Query("DELETE FROM GOAL_TABLE")
+    suspend fun deleteAll()
+
 }

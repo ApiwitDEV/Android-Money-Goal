@@ -1,7 +1,6 @@
 package com.overshoot.data.repository
 
 import android.icu.util.Calendar
-import android.util.Log
 import com.overshoot.data.datasource.ResultData
 import com.overshoot.data.datasource.local.goal.GoalDao
 import com.overshoot.data.datasource.local.goal.GoalEntity
@@ -9,14 +8,8 @@ import com.overshoot.data.datasource.onFailure
 import com.overshoot.data.datasource.onSuccess
 import com.overshoot.data.datasource.remote.MoneyGoalApiService
 import com.overshoot.data.datasource.remote.model.goal.PostGoalRequestBody
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import retrofit2.await
-import retrofit2.awaitResponse
 import java.text.SimpleDateFormat
-import kotlin.coroutines.suspendCoroutine
-import kotlin.math.log
 
 class GoalRepositoryImpl(
     private val goalDao: GoalDao,
@@ -78,6 +71,10 @@ class GoalRepositoryImpl(
 
     override suspend fun deleteGoal(): ResultData<GoalEntity> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAllGoal() {
+        return goalDao.deleteAll()
     }
 
 }

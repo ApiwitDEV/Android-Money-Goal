@@ -9,7 +9,6 @@ import com.overshoot.data.repository.CategoryRepository
 import com.overshoot.domain.usecase.transaction.AddTransactionUseCase
 import com.overshoot.moneygoal.component.home.uistatemodel.CategoryUIState
 import com.overshoot.moneygoal.component.home.upstreamdatamodel.AddTransactionData
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +21,7 @@ class HomeTransactionViewModel(
 ): ViewModel() {
 
     private val _categoryList = MutableStateFlow<List<CategoryUIState>>(listOf())
-    val category = _categoryList.asStateFlow()
+    val categoryList = _categoryList.asStateFlow()
 
     private val _addTransactionLoading = MutableStateFlow(false)
     val addTransactionLoading = _addTransactionLoading.asStateFlow()
@@ -42,6 +41,7 @@ class HomeTransactionViewModel(
                     Log.d("add_transaction", it.toString())
                 }
                 .onFailure {
+                    _addTransactionLoading.value = false
                     Log.d("add_transaction", it)
                 }
         }

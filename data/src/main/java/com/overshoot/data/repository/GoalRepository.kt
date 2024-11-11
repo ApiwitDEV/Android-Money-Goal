@@ -19,4 +19,6 @@ interface GoalRepository {
 
     suspend fun deleteGoal(): ResultData<GoalEntity>
 
+    suspend fun deleteAllGoal()
+
 }
