@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthenticationService {
 
-    fun getAccessToken(): Flow<ResultData<String>>
+    suspend fun getAccessToken(): String?
 
     fun getUserInfo(): FirebaseUser?
 

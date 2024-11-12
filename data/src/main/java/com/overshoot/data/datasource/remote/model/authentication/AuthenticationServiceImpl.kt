@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -21,6 +22,7 @@ import com.overshoot.data.datasource.Success
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
 
 class AuthenticationServiceImpl: AuthenticationService {
@@ -32,17 +34,21 @@ class AuthenticationServiceImpl: AuthenticationService {
 
     private val timeOut: Long = 60
 
-    override fun getAccessToken() = callbackFlow<ResultData<String>> {
-        auth.currentUser?.getIdToken(true)
-            ?.addOnSuccessListener {
-                trySend(Success(it.token?:""))
-            }
-            ?.addOnFailureListener {
-                trySend(Failure(message = ""))
-            }
-        awaitClose {
-            cancel()
-        }
+//    override fun getAccessToken() = callbackFlow<ResultData<String>> {
+//        auth.currentUser?.getIdToken(true)
+//            ?.addOnSuccessListener {
+//                trySend(Success(it.token?:""))
+//            }
+//            ?.addOnFailureListener {
+//                trySend(Failure(message = it.toString()))
+//            }
+//        awaitClose {
+//            cancel()
+//        }
+//    }
+
+    override suspend fun getAccessToken(): String? {
+        return auth.currentUser?.getIdToken(true)?.await()?.token
     }
 
     override fun getUserInfo(): FirebaseUser? {

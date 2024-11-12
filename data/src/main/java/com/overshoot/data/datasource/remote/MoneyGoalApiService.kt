@@ -12,8 +12,8 @@ import com.overshoot.data.datasource.remote.model.transaction.PostTransactionRes
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -44,7 +44,7 @@ interface MoneyGoalApiService {
     @GET("/transactions")
     suspend fun getTransactions(): Response<GetTransactionsResponse>
 
-    @DELETE("/transactions")
+    @HTTP(method = "DELETE", path = "/transactions", hasBody = true)
     suspend fun deleteTransactions(@Body ids: List<String>): Response<String>
 
     @GET("/categories")

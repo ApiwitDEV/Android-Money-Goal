@@ -16,9 +16,6 @@ import com.overshoot.data.datasource.remote.model.transaction.PostTransactionRes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
@@ -128,6 +125,13 @@ class TransactionRepository(
         return callRestApi {
             moneyGoalApiService.deleteTransactions(transactionIds)
         }
+            .onSuccess {
+                CoroutineScope(Dispatchers.Default).launch {
+                    transactionIds.forEach {
+                        transactionDao.deleteTransactionById(it)
+                    }
+                }
+            }
     }
 
 //    override suspend fun subscribe(): Flow<TransactionEntity> {

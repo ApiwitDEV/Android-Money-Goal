@@ -5,14 +5,7 @@ import com.moczul.ok2curl.CurlInterceptor
 import com.moczul.ok2curl.logger.Logger
 import com.overshoot.data.datasource.local.user.UserInfoDao
 import com.overshoot.data.datasource.local.user.UserInfoEntity
-import com.overshoot.data.datasource.onFailure
-import com.overshoot.data.datasource.onSuccess
 import com.overshoot.data.datasource.remote.model.authentication.AuthenticationService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -24,20 +17,20 @@ object HttpClient {
     private var client: OkHttpClient? = null
 
     fun getClient(userInfoDao: UserInfoDao, authenticationService: AuthenticationService): OkHttpClient {
-        runBlocking {
-            if (client == null) {
-                val curlGenerator = CurlInterceptor(object : Logger {
-                    override fun log(message: String) {
-                        Log.v("Ok2Curl", message)
-                    }
-                })
-                val httpLogger = HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
+        if (client == null) {
+            val curlGenerator = CurlInterceptor(object : Logger {
+                override fun log(message: String) {
+                    Log.v("Ok2Curl", message)
                 }
-                client = OkHttpClient.Builder()
-                    .callTimeout(25, TimeUnit.SECONDS)
-                    .connectTimeout(5, TimeUnit.SECONDS)
-                    .addInterceptor { chain: Interceptor.Chain ->
+            })
+            val httpLogger = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            }
+            client = OkHttpClient.Builder()
+                .callTimeout(25, TimeUnit.SECONDS)
+                .connectTimeout(5, TimeUnit.SECONDS)
+                .addInterceptor { chain: Interceptor.Chain ->
+                    runBlocking {
                         val userInfo = userInfoDao.getUserInfo()
                         val response = if (userInfo.isNotEmpty()) {
                             val request = chain.request().newBuilder()
@@ -50,24 +43,21 @@ object HttpClient {
                         }
                         if (response.code == 401) {
                             var isRefreshTokenSuccess = false
-                            launch(Dispatchers.Default) {
-                                authenticationService.getAccessToken().collect { accessTokenResult ->
-                                    accessTokenResult
-                                        .onSuccess { accessToken ->
-                                            userInfoDao.saveUserInfo(
-                                                UserInfoEntity(
-                                                    accessToken = accessToken,
-                                                    refreshToken = "",
-                                                    userName = ""
-                                                )
-                                            )
-                                            isRefreshTokenSuccess = true
-                                        }
-                                        .onFailure {
-                                            Log.e("okHttp", "refresh accessToken fail")
-                                        }
-                                    coroutineContext.cancel()
+                            try {
+                                val accessToken = authenticationService.getAccessToken()
+                                accessToken?.also {
+                                    userInfoDao.saveUserInfo(
+                                        UserInfoEntity(
+                                            accessToken = it,
+                                            refreshToken = "",
+                                            userName = ""
+                                        )
+                                    )
+                                    isRefreshTokenSuccess = true
                                 }
+                            }
+                            catch (error: Exception) {
+                                Log.e("okHttp", "refresh accessToken fail: $error")
                             }
                             if (isRefreshTokenSuccess) {
                                 val newRequest = chain.request().newBuilder()
@@ -86,10 +76,10 @@ object HttpClient {
                             response
                         }
                     }
-                    .addInterceptor(httpLogger)
-                    .addInterceptor(curlGenerator)
-                    .build()
-            }
+                }
+                .addInterceptor(httpLogger)
+                .addInterceptor(curlGenerator)
+                .build()
         }
         return client!!
     }
