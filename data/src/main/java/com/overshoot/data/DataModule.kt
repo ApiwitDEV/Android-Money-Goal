@@ -35,7 +35,6 @@ val dataModule = module {
             )
         )
     }
-
     singleOf<SimCard>(::SimCardImpl)
     singleOf(::AuthenticationRepository)
     singleOf(::GoalRepository)
