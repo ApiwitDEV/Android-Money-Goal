@@ -9,6 +9,7 @@ import com.overshoot.data.datasource.remote.model.authentication.AuthenticationS
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 
@@ -30,58 +31,66 @@ object HttpClient {
                 .callTimeout(25, TimeUnit.SECONDS)
                 .connectTimeout(5, TimeUnit.SECONDS)
                 .addInterceptor { chain: Interceptor.Chain ->
-                    runBlocking {
-                        val userInfo = userInfoDao.getUserInfo()
-                        val response = if (userInfo.isNotEmpty()) {
-                            val request = chain.request().newBuilder()
-                                .addHeader("Authorization", "Bearer "+userInfo.last().accessToken)
-                                .build()
-                            chain.proceed(request)
-                        }
-                        else {
-                            chain.proceed(chain.request())
-                        }
-                        if (response.code == 401) {
-                            var isRefreshTokenSuccess = false
-                            try {
-                                val accessToken = authenticationService.getAccessToken()
-                                accessToken?.also {
-                                    userInfoDao.saveUserInfo(
-                                        UserInfoEntity(
-                                            accessToken = it,
-                                            refreshToken = "",
-                                            userName = ""
-                                        )
-                                    )
-                                    isRefreshTokenSuccess = true
-                                }
-                            }
-                            catch (error: Exception) {
-                                Log.e("okHttp", "refresh accessToken fail: $error")
-                            }
-                            if (isRefreshTokenSuccess) {
-                                val newRequest = chain.request().newBuilder()
-                                    .addHeader("Authorization", "Bearer "+userInfoDao.getUserInfo().last().accessToken)
-                                    .build()
-                                chain.proceed(newRequest)
-                            }
-                            else {
-                                chain.proceed(chain.request()).newBuilder()
-                                    .code(401)
-                                    .message("refresh accessToken fail")
-                                    .build()
-                            }
-                        }
-                        else {
-                            response
-                        }
-                    }
+                    requestHandler(chain, userInfoDao, authenticationService)
                 }
                 .addInterceptor(httpLogger)
                 .addInterceptor(curlGenerator)
                 .build()
         }
         return client!!
+    }
+
+    private fun requestHandler(
+        chain: Interceptor.Chain,
+        userInfoDao: UserInfoDao,
+        authenticationService: AuthenticationService
+    ): Response {
+        return runBlocking {
+            val userInfo = userInfoDao.getUserInfo()
+            val response = if (userInfo.isNotEmpty()) {
+                val request = chain.request().newBuilder()
+                    .addHeader("Authorization", "Bearer "+userInfo.last().accessToken)
+                    .build()
+                chain.proceed(request)
+            }
+            else {
+                chain.proceed(chain.request())
+            }
+            if (response.code == 401) {
+                var isRefreshTokenSuccess = false
+                try {
+                    val accessToken = authenticationService.getAccessToken()
+                    accessToken?.also {
+                        userInfoDao.saveUserInfo(
+                            UserInfoEntity(
+                                accessToken = it,
+                                refreshToken = "",
+                                userName = ""
+                            )
+                        )
+                        isRefreshTokenSuccess = true
+                    }
+                }
+                catch (error: Exception) {
+                    Log.e("okHttp", "refresh accessToken fail: $error")
+                }
+                if (isRefreshTokenSuccess) {
+                    val newRequest = chain.request().newBuilder()
+                        .addHeader("Authorization", "Bearer "+userInfoDao.getUserInfo().last().accessToken)
+                        .build()
+                    chain.proceed(newRequest)
+                }
+                else {
+                    chain.proceed(chain.request()).newBuilder()
+                        .code(401)
+                        .message("refresh accessToken fail")
+                        .build()
+                }
+            }
+            else {
+                response
+            }
+        }
     }
 
 }

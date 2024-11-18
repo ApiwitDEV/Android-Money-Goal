@@ -14,18 +14,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
-import org.koin.java.KoinJavaComponent.get
 
 val domainModule = module {
     single<CoroutineScope> { CoroutineScope(Dispatchers.Default) }
-    factory { GetGoalUseCase(get()) }
-    factory { AddGoalUseCase(get()) }
-    factory { AddTransactionUseCase(get()) }
-    factory { SubscribeTransactionUseCase(get(), get()) }
-    factory { LoginWithEmailUseCase(get()) }
-    factory { RegisterWithEmailUseCase(get()) }
+    factoryOf(::GetGoalUseCase)
+    factoryOf(::AddGoalUseCase)
+    factoryOf(::AddTransactionUseCase)
+    factoryOf(::SubscribeTransactionUseCase)
+    factoryOf(::LoginWithEmailUseCase)
+    factoryOf(::RegisterWithEmailUseCase)
     factoryOf(::LogoutUseCase)
-    factory { RequestVerificationCodeUseCase(get()) }
-    factory { VerifyCodeUseCase(get()) }
+    factoryOf(::RequestVerificationCodeUseCase)
+    factoryOf(::VerifyCodeUseCase)
     factoryOf(::LoadAllInitialDataUseCase)
 }
