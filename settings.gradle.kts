@@ -33,9 +33,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Money Goal"
-include(":Money Goal App")
+rootProject.name = "Android-Money-Goal"
+include(":Money-Goal-App")
 include(":data")
 include(":domain")
-include(":Health Goal App")
+include(":Health-Goal-App")
 include(":feature:authentication")

@@ -14,10 +14,13 @@ import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import com.overshoot.data.datasource.remote.network.getMoneyGoalApiService
 import com.overshoot.data.repository.AuthenticationRepository
 import com.overshoot.data.repository.CategoryRepository
+import com.overshoot.data.repository.CategoryRepositoryImpl
 import com.overshoot.data.repository.GoalRepository
 import com.overshoot.data.repository.TransactionRepository
+import com.overshoot.data.repository.TransactionRepositoryImpl
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.qualifier
 import org.koin.dsl.module
 
 
@@ -40,6 +43,6 @@ val dataModule = module {
     singleOf(::AuthenticationRepository)
     singleOf(::GoalRepository)
     singleOf<StreamingDataSource<TransactionEntity>> (::FakeTransactionDataSource)
-    singleOf(::TransactionRepository)
-    singleOf(::CategoryRepository)
+    single<CategoryRepository> { CategoryRepositoryImpl(get(),get()) }
+    single<TransactionRepository> { TransactionRepositoryImpl(get(),get(),get()) }
 }

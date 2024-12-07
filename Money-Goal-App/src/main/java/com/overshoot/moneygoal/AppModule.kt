@@ -34,7 +34,7 @@ val appModule = module {
     viewModelOf(::SignInViewModel)
     viewModel { NotificationViewModel() }
     viewModel { HomeGoalDetailViewModel(get(), get()) }
-    viewModel { HomeTransactionViewModel(get(), get()) }
+    viewModelOf(::HomeTransactionViewModel)
     viewModelOf(::TransactionHistoryViewModel)
     viewModel { ScanViewModel() }
     viewModelOf(::AccountViewModel)
