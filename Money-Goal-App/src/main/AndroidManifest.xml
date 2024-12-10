@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:name=".MoneyGoalApp"
+        android:name="com.overshoot.moneygoalapp.MoneyGoalApp"
         android:directBootAware="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,7 +23,7 @@
         android:theme="@style/Theme.MoneyGoal"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name="com.overshoot.moneygoalapp.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MoneyGoal">
             <intent-filter>
@@ -42,7 +42,7 @@
             />
 
         <service
-            android:name=".component.notification.MyFirebaseMessagingService"
+            android:name="com.overshoot.moneygoalapp.component.notification.MyFirebaseMessagingService"
             android:directBootAware="true"
             android:exported="false">
             <intent-filter>

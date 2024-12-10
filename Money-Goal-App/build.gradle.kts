@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.overshoot.moneygoal"
+    namespace = "com.overshoot.moneygoalapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.overshoot.moneygoal"
+        applicationId = "com.overshoot.moneygoalapp"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
@@ -107,17 +107,19 @@ dependencies {
 
 // Koin for Android
 dependencies {
-    val koinVersion = "3.5.0"
-    implementation("io.insert-koin:koin-core:$koinVersion")
-    implementation("io.insert-koin:koin-android:$koinVersion")
-    implementation("io.insert-koin:koin-androidx-compose:$koinVersion")
+    val koinVersion = "4.0.0"
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+    implementation("io.insert-koin:koin-androidx-compose")
+    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
 }
 
 //Firebase
 dependencies {
     implementation("com.google.firebase:firebase-messaging-directboot:24.1.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")// Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
 
 
     // TODO: Add the dependencies for Firebase products you want to use

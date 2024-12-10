@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.overshoot.domain"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -33,17 +33,18 @@ android {
 }
 
 dependencies {
-
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.10.0")
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
     implementation(project(mapOf("path" to ":data")))
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+}
 
-    // Koin for Android
-    val koin_version = "3.5.0"
-    implementation("io.insert-koin:koin-core:$koin_version")
-    implementation("io.insert-koin:koin-android:$koin_version")
+dependencies {
+    val koinVersion = "4.0.0"
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
 }
