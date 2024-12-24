@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
+
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -47,44 +49,45 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+//            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/*"
         }
     }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2024.11.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.fragment:fragment-ktx:1.8.5")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.11.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.fragment.ktx)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.ui.test.junit4)
+    debugImplementation(libs.ui.tooling)
+    debugImplementation(libs.ui.test.manifest)
 }
 
 //Firebase
 dependencies {
-    implementation("com.google.firebase:firebase-messaging-directboot:24.1.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+    implementation(libs.google.firebase.messaging.directboot)
+    implementation(libs.google.firebase.messaging.ktx)
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(platform(libs.firebase.bom))
 
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.google.firebase.analytics)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.com.google.firebase.firebase.auth)
 
 
     // Add the dependencies for any other desired Firebase products
@@ -92,11 +95,10 @@ dependencies {
 }
 
 dependencies {
-    val koinVersion = "4.0.0"
-    implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-android")
-    implementation("io.insert-koin:koin-androidx-compose")
-    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(project.dependencies.platform(libs.koin.bom))
 }
 
 dependencies {

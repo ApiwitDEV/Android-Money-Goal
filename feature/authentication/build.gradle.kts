@@ -1,10 +1,12 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    namespace = "com.example.authentication"
+    namespace = "com.overshoot.authentication"
     compileSdk = 35
 
     defaultConfig {
@@ -41,71 +43,68 @@ android {
 dependencies {
 //    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2024.11.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.ui)
+    implementation(libs.ui.graphics)
+    implementation(libs.ui.tooling.preview)
     //implementation("androidx.compose.material3:material3")
     implementation(project(mapOf("path" to ":domain")))
     implementation(project(mapOf("path" to ":data")))
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.11.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation(libs.androidx.material3)
 
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation(libs.androidx.lifecycle.livedata.ktx)
 
 }
 
 //navigation
 dependencies {
-    val navVersion = "2.8.4"
 
-    implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
-    implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     // Feature module Support
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$navVersion")
+    implementation(libs.androidx.navigation.dynamic.features.fragment)
 
     // Testing Navigation
-    androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
+    androidTestImplementation(libs.androidx.navigation.testing)
 
     // Jetpack Compose Integration
-    implementation("androidx.navigation:navigation-compose:$navVersion")
+    implementation(libs.androidx.navigation.compose)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }
 
 // Koin for Android
 dependencies {
-    val koinVersion = "4.0.0"
-    implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-android")
-    implementation("io.insert-koin:koin-androidx-compose")
-    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(project.dependencies.platform(libs.koin.bom))
 }
 
 //Firebase
 dependencies {
-    implementation("com.google.firebase:firebase-messaging-directboot:24.1.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+    implementation(libs.firebase.messaging.directboot)
+    implementation(libs.firebase.messaging.ktx)
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(platform(libs.firebase.bom))
 
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.com.google.firebase.firebase.auth)
 
 
     // Add the dependencies for any other desired Firebase products

@@ -35,72 +35,67 @@ android {
 
 dependencies {
 
-    val kotlin_version = "1.5.31"
+    implementation(libs.kotlin.stdlib.jdk7)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version")
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    implementation(libs.androidx.room.ktx)
 
-    val room_version = "2.6.1"
-
-    implementation("androidx.room:room-ktx:$room_version")
-
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
 
 //    kapt("androidx.room:room-compiler:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
+    ksp(libs.androidx.room.compiler)
     
-    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation(libs.firebase.auth.ktx)
 
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-scalars:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
-    implementation("com.squareup.moshi:moshi:1.15.1")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("com.github.mrmike:ok2curl:0.8.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.scalars)
+    implementation(libs.converter.gson)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi)
+    implementation(libs.logging.interceptor)
+    implementation(libs.ok2curl)
 
 }
 
 // Preferences DataStore (SharedPreferences like APIs)
 dependencies {
-    implementation("androidx.datastore:datastore-preferences:1.1.1")
+    implementation(libs.androidx.datastore.preferences)
 
     // optional - RxJava2 support
-    implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.1")
+    implementation(libs.androidx.datastore.preferences.rxjava2)
 
     // optional - RxJava3 support
-    implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.1")
+    implementation(libs.androidx.datastore.preferences.rxjava3)
 }
 
 // Alternatively - use the following artifact without an Android dependency.
 dependencies {
-    implementation("androidx.datastore:datastore-preferences-core:1.1.1")
+    implementation(libs.androidx.datastore.preferences.core)
 }
 // Typed DataStore (Typed API surface, such as Proto)
 dependencies {
-    implementation("androidx.datastore:datastore:1.1.1")
+    implementation(libs.androidx.datastore)
 
     // optional - RxJava2 support
-    implementation("androidx.datastore:datastore-rxjava2:1.1.1")
+    implementation(libs.androidx.datastore.rxjava2)
 
     // optional - RxJava3 support
-    implementation("androidx.datastore:datastore-rxjava3:1.1.1")
+    implementation(libs.androidx.datastore.rxjava3)
 }
 
 // Alternatively - use the following artifact without an Android dependency.
 dependencies {
-    implementation("androidx.datastore:datastore-core:1.1.1")
+    implementation(libs.androidx.datastore.core)
 }
 
 dependencies {
-    val koinVersion = "4.0.0"
-    implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-android")
-    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(project.dependencies.platform(libs.koin.bom))
 }

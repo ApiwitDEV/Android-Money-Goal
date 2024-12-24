@@ -5,6 +5,8 @@ plugins {
     // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -61,72 +63,68 @@ android {
 dependencies {
 //    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.9.3")
-    implementation(platform("androidx.compose:compose-bom:2024.11.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    //implementation("androidx.compose.material3:material3")
+    implementation(libs.core.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.androidx.compose.ui.ui.graphics)
+    implementation(libs.androidx.compose.ui.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     implementation(project(mapOf("path" to ":domain")))
     implementation(project(mapOf("path" to ":data")))
     implementation(project(":feature:authentication"))
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.11.00"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-    implementation("androidx.compose.material3:material3:1.3.1")
-
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.ui.test.junit4)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    debugImplementation(libs.androidx.compose.ui.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.ui.test.manifest)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
 
 }
 
 //navigation
 dependencies {
-    val navVersion = "2.8.4"
 
-    implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
-    implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
 
     // Feature module Support
-    implementation("androidx.navigation:navigation-dynamic-features-fragment:$navVersion")
+    implementation(libs.androidx.navigation.dynamic.features.fragment)
 
     // Testing Navigation
-    androidTestImplementation("androidx.navigation:navigation-testing:$navVersion")
+    androidTestImplementation(libs.androidx.navigation.testing)
 
     // Jetpack Compose Integration
-    implementation("androidx.navigation:navigation-compose:$navVersion")
+    implementation(libs.androidx.navigation.compose)
 
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    implementation(libs.androidx.lifecycle.runtime.compose)
 }
 
 // Koin for Android
 dependencies {
-    val koinVersion = "4.0.0"
-    implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-android")
-    implementation("io.insert-koin:koin-androidx-compose")
-    implementation(project.dependencies.platform("io.insert-koin:koin-bom:$koinVersion"))
+    implementation(libs.insert.koin.koin.core)
+    implementation(libs.insert.koin.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(project.dependencies.platform(libs.koin.bom))
 }
 
 //Firebase
 dependencies {
-    implementation("com.google.firebase:firebase-messaging-directboot:24.1.0")
-    implementation("com.google.firebase:firebase-messaging-ktx:24.1.0")
+    implementation(libs.google.firebase.messaging.directboot)
+    implementation(libs.google.firebase.messaging.ktx)
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(platform(libs.firebase.bom))
 
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.com.google.firebase.firebase.analytics)
+    implementation(libs.firebase.ui.auth)
+    implementation(libs.com.google.firebase.firebase.auth)
 
 
     // Add the dependencies for any other desired Firebase products
@@ -135,16 +133,16 @@ dependencies {
 
 dependencies {
     // ...
-    debugImplementation("com.example.flutter_module:flutter_debug:1.0")
-    releaseImplementation("com.example.flutter_module:flutter_release:1.0")
+    debugImplementation(libs.flutter.debug)
+    releaseImplementation(libs.flutter.release)
     add("profileImplementation", "com.example.flutter_module:flutter_profile:1.0")
 }
 
 //ML
 dependencies {
-    implementation("androidx.compose.ui:ui-viewbinding:1.7.5")// Face features
-    implementation("com.google.mlkit:face-detection:16.1.7")
+    implementation(libs.androidx.ui.viewbinding)// Face features
+    implementation(libs.face.detection)
 
     // Text features
-    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
+    implementation(libs.play.services.mlkit.text.recognition)
 }
