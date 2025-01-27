@@ -9,9 +9,11 @@ import androidx.navigation.compose.rememberNavController
 import com.overshoot.moneygoalapp.AppStateHolder
 import com.overshoot.moneygoalapp.component.account.AccountScreen
 import com.overshoot.moneygoalapp.component.home.ui.HomeScreen
+import com.overshoot.moneygoalapp.component.scanbill.stateholder.ScanBillViewModel
 import com.overshoot.moneygoalapp.component.scanbill.ui.ScanBillScreen
 import com.overshoot.moneygoalapp.component.transactionhistory.TransactionHistoryScreen
 import com.overshoot.moneygoalapp.navigation.authentication.AuthenticationNavigationRoute
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun MainNavigationHost(
@@ -19,6 +21,7 @@ fun MainNavigationHost(
     openAddTransactionSheet: () -> Unit,
     openAddGoalSheet: () -> Unit,
 ) {
+    val scanBillViewModel = koinViewModel<ScanBillViewModel>()
     appStateHolder.mainNavController = rememberNavController()
     val navController = appStateHolder.mainNavController
     NavHost(
@@ -59,7 +62,7 @@ fun MainNavigationHost(
                 fadeOut()
             }
         ) {
-            ScanBillScreen()
+            ScanBillScreen(scanBillViewModel = scanBillViewModel)
         }
 
         composable(

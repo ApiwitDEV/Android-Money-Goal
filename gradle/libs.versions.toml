@@ -101,8 +101,8 @@ firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "fir
 firebase-messaging-directboot = { module = "com.google.firebase:firebase-messaging-directboot" }
 firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
-flutter_debug = { module = "com.example.flutter_module:flutter_debug", version.ref = "flutter_debug" }
-flutter_release = { module = "com.example.flutter_module:flutter_release", version.ref = "flutter_release" }
+flutter_debug = { module = "com.overshoot.money_goal_flutter_module:flutter_debug", version.ref = "flutter_debug" }
+flutter_release = { module = "com.overshoot.money_goal_flutter_module:flutter_release", version.ref = "flutter_release" }
 google-firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 google-firebase-messaging-directboot = { module = "com.google.firebase:firebase-messaging-directboot", version.ref = "firebaseMessagingDirectboot" }
 google-firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }

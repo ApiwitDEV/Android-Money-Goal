@@ -28,8 +28,8 @@ object HttpClient {
                 level = HttpLoggingInterceptor.Level.BODY
             }
             client = OkHttpClient.Builder()
-                .callTimeout(25, TimeUnit.SECONDS)
-                .connectTimeout(5, TimeUnit.SECONDS)
+                .callTimeout(120, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
                 .addInterceptor { chain: Interceptor.Chain ->
                     requestHandler(chain, userInfoDao, authenticationService)
                 }

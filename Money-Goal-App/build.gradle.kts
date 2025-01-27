@@ -135,7 +135,7 @@ dependencies {
     // ...
     debugImplementation(libs.flutter.debug)
     releaseImplementation(libs.flutter.release)
-    add("profileImplementation", "com.example.flutter_module:flutter_profile:1.0")
+    add("profileImplementation", "com.overshoot.money_goal_flutter_module:flutter_profile:1.0")
 }
 
 //ML

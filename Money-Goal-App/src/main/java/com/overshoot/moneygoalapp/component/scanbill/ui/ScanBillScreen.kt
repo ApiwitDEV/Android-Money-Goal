@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -24,28 +25,29 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.overshoot.moneygoalapp.common.ui.LoadingDialog
 import com.overshoot.moneygoalapp.component.scanbill.stateholder.ScanBillStateHolder
-import com.overshoot.moneygoalapp.component.scanbill.stateholder.ScanViewModel
+import com.overshoot.moneygoalapp.component.scanbill.stateholder.ScanBillViewModel
 import kotlinx.coroutines.flow.collectLatest
-import org.koin.androidx.compose.koinViewModel
-
 
 @Composable
-fun ScanBillScreen() {
-    val viewModel = koinViewModel<ScanViewModel>()
+fun ScanBillScreen(scanBillViewModel: ScanBillViewModel) {
     val activityResult = LocalActivityResultRegistryOwner.current?.activityResultRegistry
     val context = LocalContext.current
     val density = LocalDensity.current
     val stateHolder = remember { activityResult?.let { ScanBillStateHolder(activity = it, contentResolver = context.contentResolver) } }
     val inputImage = stateHolder?.image?.collectAsStateWithLifecycle()
     var imageHeight by remember { mutableStateOf(0.dp) }
+    val uiState = scanBillViewModel.uiState.collectAsStateWithLifecycle().value
     LaunchedEffect(Unit) {
         stateHolder?.image?.collectLatest {
-            viewModel.collectImage(it)
+            scanBillViewModel.collectImage(it)
         }
     }
     LaunchedEffect(Unit) {
-        stateHolder?.loadCachePhoto(viewModel.loadCollectedImage())
+        scanBillViewModel.loadCollectedImage()?.also { image ->
+            stateHolder?.loadCachePhoto(image)
+        }
     }
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
@@ -69,7 +71,7 @@ fun ScanBillScreen() {
         ) {
             item {
                 if (imageHeight != 0.dp) {
-                    inputImage?.value?.asImageBitmap()?.let { image ->
+                    inputImage?.value?.image?.asImageBitmap()?.let { image ->
                         Image(
                             modifier = Modifier.height(imageHeight),
                             bitmap = image,
@@ -78,11 +80,27 @@ fun ScanBillScreen() {
                     }
                 }
             }
+//            item {
+//                stateHolder?.text?.collectAsStateWithLifecycle().let { t ->
+//                    Text(text = t?.value?:"")
+//                }
+//            }
             item {
-                stateHolder?.text?.collectAsStateWithLifecycle().let { t ->
-                    Text(text = t?.value?:"")
+                Text(text = uiState.detail)
+            }
+            item {
+                Button(
+                    enabled = uiState.isSubmitAble,
+                    onClick = {
+                        scanBillViewModel.submitImage()
+                    }
+                ) {
+                    Text("Submit")
                 }
             }
         }
+    }
+    if (uiState.isLoading) {
+        LoadingDialog()
     }
 }

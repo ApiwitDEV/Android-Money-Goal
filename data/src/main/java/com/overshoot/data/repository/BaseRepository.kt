@@ -9,9 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.koin.java.KoinJavaComponent.inject
 import retrofit2.Response
+import java.net.UnknownHostException
 import kotlin.coroutines.CoroutineContext
 
 open class BaseRepository {
@@ -46,6 +48,25 @@ open class BaseRepository {
             }
         } else {
             Failure(message = "Connectivity Lost")
+        }
+    }
+
+    protected suspend fun <T> callApi(call: suspend CoroutineScope.() -> Response<T>): Result<T> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = call()
+                if (response.isSuccessful) {
+                    response.body()?.let { Result.success(it) }?: Result.failure(exception = Exception("Response body is null"))
+                } else {
+                    Result.failure(exception = Exception(response.message()))
+                }
+            }
+            catch (error: Exception) {
+                when(error) {
+                    is UnknownHostException -> Result.failure(exception = Exception("No Internet Connection OR Server Not Found "))
+                    else -> Result.failure(exception = error)
+                }
+            }
         }
     }
 

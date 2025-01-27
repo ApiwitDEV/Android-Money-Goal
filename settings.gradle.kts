@@ -20,7 +20,7 @@ dependencyResolutionManagement {
 
             // Add the new repositories starting on the next line...
             maven {
-                url = uri("/Users/bas/Documents/GitHub/Money Goal/flutter_module/build/host/outputs/repo")
+                url = uri("/Users/bas/Documents/GitHub/Money Goal/money_goal_flutter_module/build/host/outputs/repo")
                 // This is relative to the location of the build.gradle file
                 // if using a relative path.
             }

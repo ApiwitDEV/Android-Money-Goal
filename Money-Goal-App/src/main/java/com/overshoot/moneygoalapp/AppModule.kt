@@ -6,7 +6,7 @@ import com.overshoot.moneygoalapp.component.account.stateholder.AccountViewModel
 import com.overshoot.moneygoalapp.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoalapp.component.home.stateholder.viewmodel.HomeTransactionViewModel
 import com.overshoot.moneygoalapp.component.notification.NotificationViewModel
-import com.overshoot.moneygoalapp.component.scanbill.stateholder.ScanViewModel
+import com.overshoot.moneygoalapp.component.scanbill.stateholder.ScanBillViewModel
 import com.overshoot.moneygoalapp.component.transactionhistory.stateholder.viewmodel.TransactionHistoryViewModel
 import com.overshoot.moneygoalapp.flutterinteractor.FlutterInterface
 import com.overshoot.moneygoalapp.flutterinteractor.FlutterMainExecutor
@@ -36,6 +36,6 @@ val appModule = module {
     viewModel { HomeGoalDetailViewModel(get(), get()) }
     viewModelOf(::HomeTransactionViewModel)
     viewModelOf(::TransactionHistoryViewModel)
-    viewModel { ScanViewModel() }
+    viewModel { ScanBillViewModel(get()) }
     viewModelOf(::AccountViewModel)
 }
