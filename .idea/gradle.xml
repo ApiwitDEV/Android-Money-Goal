@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/authentication" />
+            <option value="$PROJECT_DIR$/shared" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

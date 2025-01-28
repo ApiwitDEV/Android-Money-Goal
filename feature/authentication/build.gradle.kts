@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.overshoot.authentication"
+    namespace = "com.overshoot.feature.authentication"
     compileSdk = 35
 
     defaultConfig {

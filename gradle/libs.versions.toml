@@ -45,10 +45,20 @@ roomKtx = "2.6.1"
 roomRuntime = "2.6.1"
 uiViewbinding = "1.7.6"
 kotlin = "2.1.0"
+jetbrainsKotlinJvm = "2.1.0"
+android-gradlePlugin = "8.2.2"
+compose-plugin = "1.6.10"
+android-compileSdk = "35"
+android-minSdk = "24"
 
 [plugins]
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+androidApplication = { id = "com.android.application", version.ref = "android-gradlePlugin" }
+androidLibrary = { id = "com.android.library", version.ref = "android-gradlePlugin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 
 [libraries]
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }

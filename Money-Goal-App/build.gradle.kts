@@ -74,6 +74,7 @@ dependencies {
     implementation(project(mapOf("path" to ":domain")))
     implementation(project(mapOf("path" to ":data")))
     implementation(project(":feature:authentication"))
+    implementation(project(":shared"))
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.ext.junit)

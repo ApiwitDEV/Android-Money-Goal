@@ -11,6 +11,8 @@ data class ReceiptInfoResponse(
     val fileName: String?,
     @SerializedName("file_size")
     val fileSize: Long?,
-    @SerializedName("message")
-    val message: String?
+    @SerializedName("error_message")
+    val errorMessage: String?,
+    @SerializedName("status")
+    val status: String?
 )
