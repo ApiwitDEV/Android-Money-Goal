@@ -45,7 +45,7 @@ val dataModule = module {
     singleOf(::AuthenticationRepository)
     singleOf(::GoalRepository)
     singleOf<StreamingDataSource<TransactionEntity>> (::FakeTransactionDataSource)
-    singleOf(::UploadFileService)
+    single{ UploadFileService(androidContext()) }
     single<CategoryRepository> { CategoryRepositoryImpl(get(),get()) }
     single<TransactionRepository> { TransactionRepositoryImpl(get(),get(),get()) }
     single<BillReceiptRepository> { BillReceiptRepositoryImpl(get(), get()) }

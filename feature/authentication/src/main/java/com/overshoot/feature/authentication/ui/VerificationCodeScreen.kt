@@ -1,4 +1,4 @@
-package com.overshoot.authentication.ui
+package com.overshoot.feature.authentication.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.overshoot.authentication.stateholder.SignInViewModel
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
 
 @Composable
 fun VerificationCodeScreen(

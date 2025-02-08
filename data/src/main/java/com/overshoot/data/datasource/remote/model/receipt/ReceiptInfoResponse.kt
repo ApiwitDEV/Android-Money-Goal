@@ -14,5 +14,6 @@ data class ReceiptInfoResponse(
     @SerializedName("error_message")
     val errorMessage: String?,
     @SerializedName("status")
-    val status: String?
+    val status: String?,
+    val progress: Double = 0.0
 )

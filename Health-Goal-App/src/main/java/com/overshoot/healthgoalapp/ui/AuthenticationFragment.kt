@@ -23,12 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asFlow
-import com.overshoot.authentication.stateholder.SignInViewModel
-import com.overshoot.authentication.ui.SignInScreen
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
+import com.overshoot.feature.authentication.ui.SignInScreen
 import com.overshoot.data.repository.AuthenticationRepository
 import com.overshoot.healthgoalapp.databinding.FragmentAuthenticationBinding
 import com.overshoot.healthgoalapp.ui.theme.HealthGoalTheme
-import kotlinx.coroutines.supervisorScope
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

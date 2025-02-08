@@ -1,85 +1,85 @@
 package com.overshoot.data.datasource.remote
 
+import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.IOException
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
-class UploadFileService {
+class UploadFileService(private val context: Context) {
 
     data class UploadFileResult(
-        val progress: Double,
-        val isComplete: Boolean
+        val isComplete: Boolean,
+        val progress: Double = 0.0,
+        val message: String = "",
+        val uploadedBytes: Long = 0L
     )
 
-    fun uploadFile(uploadSessionUrl: URL, file: ByteArray, type: String): Flow<Result<UploadFileResult>> {
-        val httpLogger = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.HEADERS
-        }
-        val client = OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .callTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .addInterceptor(httpLogger)
-            .build()
+    private val httpLogger = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.HEADERS
+    }
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .callTimeout(60, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
+        .addInterceptor(httpLogger)
+        .build()
 
+    fun uploadFile(uploadSessionUrl: URL, fileUri: Uri, type: String): Flow<Result<UploadFileResult>> {
+        val maxChunkSize: Int = 256 * 1024
         return flow {
-            val fileSize = file.size
-            val maxChunkSize = 1024*512
-            val chunks = file.toList().chunked(maxChunkSize) { it.toByteArray() }
-            var byteSum = 0
-            for (index in chunks.indices) {
-                val byteChunk = chunks[index]
-                val body = byteChunk.toRequestBody()
-                val request = Request.Builder()
-                    .url(uploadSessionUrl)
-                    .header("Content-Type", type)
-                    .header("Content-Range", "bytes ${byteSum}-${byteSum + byteChunk.size - 1}/$fileSize")
-                    .put(body)
-                    .build()
-                try {
-                    val response = client.newCall(request).execute()
-                    byteSum += byteChunk.size
-                    if (response.code == 308 || response.isSuccessful) {
-                        val progress = (index.toDouble()*maxChunkSize) / fileSize
-                        if (index == chunks.lastIndex) {
-                            emit(
-                                Result.success(
-                                    UploadFileResult(
-                                        progress = progress,
-                                        isComplete = true
-                                    )
-                                )
-                            )
+            val contentResolver: ContentResolver = context.contentResolver
+            val contentLength = contentResolver.openFileDescriptor(fileUri, "r").use {
+                it?.statSize?: -1L
+            }
+            if (contentLength == -1L) {
+                emit(Result.failure(IOException("Could not determine file size.")))
+                return@flow
+            }
+            contentResolver.openInputStream(fileUri).use { inputStream ->
+                inputStream?.also {
+                    val buffer = ByteArray(maxChunkSize)
+                    var uploadedBytes = 0L
+                    var bytesRead: Int
+                    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+
+                        val requestBody = buffer.copyOfRange(0, bytesRead).toRequestBody()
+                        val request = okhttp3.Request.Builder()
+                            .url(uploadSessionUrl)
+                            .header("Content-Type", type)
+                            .header("Content-Range", "bytes ${uploadedBytes}-${uploadedBytes + bytesRead - 1}/$contentLength")
+                            .put(requestBody)
+                            .build()
+
+                        try {
+                            val response = client.newCall(request).execute()
+                            if (response.code == 308) {
+                                uploadedBytes += bytesRead
+                                val progress = (uploadedBytes * 100.0 / contentLength)
+                                emit(Result.success(UploadFileResult(false, progress = progress, uploadedBytes = uploadedBytes, message = "Uploading...")))
+                            } else if (response.isSuccessful) {
+                                emit(Result.success(UploadFileResult(true, 100.0, uploadedBytes = uploadedBytes, message = "Upload completed successfully.")))
+                            } else {
+                                emit(Result.failure(IOException("Upload failed: ${response.code} ${response.message}")))
+                                return@flow
+                            }
+                        } catch (e: Exception) {
+                            emit(Result.failure(IOException("Upload failed: ${e.message}", e)))
                         }
-                        else {
-                            emit(
-                                Result.success(
-                                    UploadFileResult(
-                                        progress = progress,
-                                        isComplete = false
-                                    )
-                                )
-                            )
-                        }
+
                     }
-                    else {
-                        // fail from server
-                        emit(Result.failure(Exception(response.message)))
-                        break
-                    }
-                }
-                catch (error: Exception) {
-                    // fail from other
-                    throw error
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
 }

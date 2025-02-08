@@ -1,4 +1,4 @@
-package com.overshoot.authentication.ui
+package com.overshoot.feature.authentication.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.overshoot.authentication.stateholder.SignUpViewModel
+import com.overshoot.feature.authentication.stateholder.SignUpViewModel
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

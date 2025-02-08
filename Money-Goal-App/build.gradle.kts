@@ -147,3 +147,8 @@ dependencies {
     // Text features
     implementation(libs.play.services.mlkit.text.recognition)
 }
+
+dependencies {
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+}

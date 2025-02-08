@@ -1,4 +1,4 @@
-package com.overshoot.authentication
+package com.overshoot.feature.authentication
 
 import org.junit.Test
 

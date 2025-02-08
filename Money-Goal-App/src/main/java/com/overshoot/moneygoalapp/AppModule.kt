@@ -1,7 +1,7 @@
 package com.overshoot.moneygoalapp
 
-import com.overshoot.authentication.stateholder.SignInViewModel
-import com.overshoot.authentication.stateholder.SignUpViewModel
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
+import com.overshoot.feature.authentication.stateholder.SignUpViewModel
 import com.overshoot.moneygoalapp.component.account.stateholder.AccountViewModel
 import com.overshoot.moneygoalapp.component.home.stateholder.viewmodel.HomeGoalDetailViewModel
 import com.overshoot.moneygoalapp.component.home.stateholder.viewmodel.HomeTransactionViewModel

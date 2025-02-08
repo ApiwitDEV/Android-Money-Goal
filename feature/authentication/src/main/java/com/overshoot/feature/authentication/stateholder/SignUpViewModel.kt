@@ -1,4 +1,4 @@
-package com.overshoot.authentication.stateholder
+package com.overshoot.feature.authentication.stateholder
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf

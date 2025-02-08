@@ -3,10 +3,10 @@ package com.overshoot.moneygoalapp.navigation.authentication
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.overshoot.authentication.stateholder.SignInViewModel
-import com.overshoot.authentication.ui.SignInScreen
-import com.overshoot.authentication.ui.SignUpScreen
-import com.overshoot.authentication.ui.VerificationCodeScreen
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
+import com.overshoot.feature.authentication.ui.SignInScreen
+import com.overshoot.feature.authentication.ui.SignUpScreen
+import com.overshoot.feature.authentication.ui.VerificationCodeScreen
 import com.overshoot.moneygoalapp.AppStateHolder
 import com.overshoot.moneygoalapp.component.dashboard.DashboardScreen
 import com.overshoot.moneygoalapp.component.home.ui.MainScreen

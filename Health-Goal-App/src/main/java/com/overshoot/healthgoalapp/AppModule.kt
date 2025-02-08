@@ -1,7 +1,7 @@
 package com.overshoot.healthgoalapp
 
-import com.overshoot.authentication.stateholder.SignInViewModel
-import com.overshoot.authentication.stateholder.SignUpViewModel
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
+import com.overshoot.feature.authentication.stateholder.SignUpViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

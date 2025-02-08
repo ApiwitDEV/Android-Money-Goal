@@ -54,15 +54,16 @@ class ScanBillStateHolder(
                     image = getBitmapFromUri(uri),
                     imageFileName = getFileNameFromUri(uri),
                     mimeType = getMimeTypeFromUri(uri),
-                    fileSize = getFileSizeFromUri(uri)
+                    fileSize = getFileSizeFromUri(uri),
+                    imageUri = uri
                 )
-                runTextRecognition()
+//                runTextRecognition()
             } else {
                 Log.d("PhotoPicker", "No media selected")
-                _image.value = ImageInfoUIState(
-                    image = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888),
-                )
-                _text.value = "No media selected"
+//                _image.value = ImageInfoUIState(
+//                    image = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888),
+//                )
+//                _text.value = "No media selected"
             }
         }
 

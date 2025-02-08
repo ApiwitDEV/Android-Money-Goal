@@ -1,4 +1,4 @@
-package com.overshoot.authentication.ui
+package com.overshoot.feature.authentication.ui
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -32,7 +32,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.asFlow
-import com.overshoot.authentication.stateholder.SignInViewModel
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
 
 @Composable
 fun SignInScreen(

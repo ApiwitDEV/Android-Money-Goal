@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,11 +26,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.asFlow
-import com.overshoot.authentication.stateholder.SignInViewModel
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.messaging
+import com.overshoot.feature.authentication.stateholder.SignInViewModel
 import com.overshoot.data.datasource.remote.network.InternetConnectivity
 import com.overshoot.moneygoalapp.common.ui.LoadingDialog
 import com.overshoot.moneygoalapp.navigation.authentication.AuthenticationNavigationHost
