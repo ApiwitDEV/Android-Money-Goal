@@ -58,7 +58,7 @@ open class BaseRepository {
                 if (response.isSuccessful) {
                     response.body()?.let { Result.success(it) }?: Result.failure(exception = Exception("Response body is null"))
                 } else {
-                    Result.failure(exception = Exception(response.message()))
+                    Result.failure(exception = Exception(response.code().toString() + response.message()))
                 }
             }
             catch (error: Exception) {

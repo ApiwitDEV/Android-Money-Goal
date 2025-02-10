@@ -34,6 +34,9 @@ class ScanBillStateHolder(
     private val _image = MutableStateFlow<ImageInfoUIState?>(null)
     val image: StateFlow<ImageInfoUIState?> = _image.asStateFlow()
 
+    private val _isCancel = MutableStateFlow(false)
+    val isCancel: StateFlow<Boolean> = _isCancel.asStateFlow()
+
     private val _imageDimension = mutableStateOf<Pair<Int, Int>?>(null)
     val imageDimension: State<Pair<Int, Int>?> = _imageDimension
 
@@ -73,6 +76,14 @@ class ScanBillStateHolder(
     fun loadCachePhoto(image: ImageInfoUIState) {
         _image.value = image
         runTextRecognition()
+    }
+
+    fun cancel() {
+        _isCancel.value = true
+    }
+
+    fun dismissCancel() {
+        _isCancel.value = false
     }
 
     // Function to get the file name from URI

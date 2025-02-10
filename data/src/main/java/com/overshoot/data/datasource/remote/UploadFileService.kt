@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit
 
 class UploadFileService(private val context: Context) {
 
+    private var uploadSessionUrl: URL? = null
+
     data class UploadFileResult(
         val isComplete: Boolean,
         val progress: Double = 0.0,
@@ -35,6 +37,7 @@ class UploadFileService(private val context: Context) {
         .build()
 
     fun uploadFile(uploadSessionUrl: URL, fileUri: Uri, type: String): Flow<Result<UploadFileResult>> {
+        this.uploadSessionUrl = uploadSessionUrl
         val maxChunkSize: Int = 256 * 1024
         return flow {
             val contentResolver: ContentResolver = context.contentResolver
@@ -80,6 +83,22 @@ class UploadFileService(private val context: Context) {
                 }
             }
         }.flowOn(Dispatchers.IO)
+    }
+
+    fun cancelUploadSession(): Result<Unit>? {
+        return this.uploadSessionUrl?.let {
+            val request = okhttp3.Request.Builder()
+                .url(it)
+                .delete()
+                .build()
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            }
+            else {
+                Result.failure(exception = Exception(""))
+            }
+        }
     }
 
 }

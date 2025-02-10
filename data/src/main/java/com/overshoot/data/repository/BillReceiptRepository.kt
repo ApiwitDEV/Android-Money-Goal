@@ -11,4 +11,8 @@ interface BillReceiptRepository {
 
     suspend fun chunkSubmitBillReceipt(image: Uri, filename: String, type: String): Flow<Result<ReceiptInfoResponse>>
 
+    suspend fun cancelChunkUploadBillReceipt(): Result<Unit>?
+
+    suspend fun deleteUploadedFile(filename: String): Result<Unit>?
+
 }

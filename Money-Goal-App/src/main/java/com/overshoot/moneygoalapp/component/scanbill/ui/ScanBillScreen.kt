@@ -3,6 +3,8 @@ package com.overshoot.moneygoalapp.component.scanbill.ui
 import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -11,9 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.overshoot.moneygoalapp.R
@@ -51,7 +57,7 @@ fun ScanBillScreen(scanBillViewModel: ScanBillViewModel) {
     val uiState = scanBillViewModel.uiState.collectAsStateWithLifecycle().value
     LaunchedEffect(Unit) {
         stateHolder?.image?.collectLatest {
-            if (scanBillViewModel._imageInfo == null || scanBillViewModel._imageInfo != stateHolder.image.value) {
+            if (scanBillViewModel.imageInfo == null || scanBillViewModel.imageInfo != stateHolder.image.value) {
                 scanBillViewModel.collectImage(it)
             }
         }
@@ -66,6 +72,10 @@ fun ScanBillScreen(scanBillViewModel: ScanBillViewModel) {
         uiState = uiState,
         onSubmit = {
             scanBillViewModel.submitImage()
+        },
+        onConfirmCancel = {
+            stateHolder?.dismissCancel()
+            scanBillViewModel.confirmCancel()
         }
     )
 }
@@ -74,7 +84,8 @@ fun ScanBillScreen(scanBillViewModel: ScanBillViewModel) {
 fun ScanBillContent(
     stateHolder: ScanBillStateHolder?,
     uiState: ScanBillUIState,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    onConfirmCancel: () -> Unit
 ) {
     val inputImage = stateHolder?.image?.collectAsStateWithLifecycle()
     var imageHeight by remember { mutableStateOf(0.dp) }
@@ -82,20 +93,37 @@ fun ScanBillContent(
     Scaffold(
         modifier = Modifier.systemBarsPadding(),
         floatingActionButton = {
-//            Button(onClick = { stateHolder?.choosePhoto() }) {
-//                Text(text = "Choose Photo")
-//            }
             FloatingActionButton(
-                onClick = { stateHolder?.choosePhoto() },
+                onClick = {
+                    when(uiState.status) {
+                        ScanBillStatus.PREPARING, ScanBillStatus.LOADING, ScanBillStatus.ANALYZING -> {
+                            stateHolder?.cancel()
+                        }
+                        else -> { stateHolder?.choosePhoto() }
+                    }
+                },
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 2.dp)
             ) {
-                Image(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(32.dp),
-                    painter = painterResource(R.drawable.baseline_image_24),
-                    contentDescription = null
-                )
+                when(uiState.status) {
+                    ScanBillStatus.PREPARING, ScanBillStatus.LOADING, ScanBillStatus.ANALYZING, ScanBillStatus.CANCELING -> {
+                        Image(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(32.dp),
+                            painter = painterResource(R.drawable.baseline_close_24),
+                            contentDescription = null
+                        )
+                    }
+                    ScanBillStatus.DONE, ScanBillStatus.ERROR -> {
+                        Image(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(32.dp),
+                            painter = painterResource(R.drawable.baseline_image_24),
+                            contentDescription = null
+                        )
+                    }
+                }
             }
         }
     ) {
@@ -132,7 +160,7 @@ fun ScanBillContent(
             item {
                 Spacer(Modifier.height(16.dp))
                 when(uiState.status) {
-                    ScanBillStatus.PREPARING, ScanBillStatus.LOADING, ScanBillStatus.ANALYZING -> {
+                    ScanBillStatus.PREPARING, ScanBillStatus.LOADING, ScanBillStatus.ANALYZING, ScanBillStatus.CANCELING -> {
                         ProgressBar(uiState.progress, uiState.status)
                     }
                     ScanBillStatus.DONE, ScanBillStatus.ERROR -> {
@@ -151,12 +179,20 @@ fun ScanBillContent(
             }
         }
     }
+    if (stateHolder?.isCancel?.collectAsStateWithLifecycle()?.value == true && uiState.status !in listOf(ScanBillStatus.DONE, ScanBillStatus.ERROR)) {
+        CancelingDialog(
+            onDismissRequest = {
+                stateHolder.dismissCancel()
+            },
+            onConfirm = onConfirmCancel
+        )
+    }
 }
 
 @Composable
-fun ProgressBar(progress: Double, scanBillStatus: ScanBillStatus) {
+private fun ProgressBar(progress: Double, scanBillStatus: ScanBillStatus) {
     Box(contentAlignment = Alignment.Center) {
-        if (scanBillStatus == ScanBillStatus.PREPARING || scanBillStatus == ScanBillStatus.ANALYZING) {
+        if (scanBillStatus in listOf(ScanBillStatus.PREPARING, ScanBillStatus.ANALYZING, ScanBillStatus.CANCELING)) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -181,10 +217,44 @@ fun ProgressBar(progress: Double, scanBillStatus: ScanBillStatus) {
                 ScanBillStatus.PREPARING -> "Preparing"
                 ScanBillStatus.LOADING -> (round(progress*100)/100).toString()
                 ScanBillStatus.ANALYZING -> "Analyzing"
+                ScanBillStatus.CANCELING -> "Canceling"
                 else -> ""
             },
             fontSize = 20.sp
         )
+    }
+}
+
+@Composable
+private fun CancelingDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Dialog(onDismissRequest = {}) {
+        Card {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Are you sure")
+                Row {
+                    Button(
+                        modifier = Modifier.weight(0.45f),
+                        onClick = onDismissRequest
+                    ) {
+                        Text(text = "No")
+                    }
+                    Spacer(Modifier.weight(0.1f))
+                    Button(
+                        modifier = Modifier.weight(0.45f),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                        onClick = onConfirm
+                    ) {
+                        Text(text = "Yes")
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -197,19 +267,28 @@ fun ScanBillPreview() {
     ScanBillContent(
         stateHolder = stateHolder,
         uiState = ScanBillUIState(
-            status = ScanBillStatus.LOADING,
+            status = ScanBillStatus.ANALYZING,
             isSubmitAble = true,
             progress = 55.538,
             detail = "aaa"
         ),
-        onSubmit = {}
+        onSubmit = {},
+        onConfirmCancel = {}
     )
 }
 
 @Composable
 @Preview(showBackground = true)
-fun ProgressBarDialogPreview() {
+fun ProgressBarPreview() {
     MoneyGoalTheme {
         ProgressBar(progress = 40.452, scanBillStatus = ScanBillStatus.ANALYZING)
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun CancelingDialogPreview() {
+    MoneyGoalTheme {
+        CancelingDialog({},{})
     }
 }

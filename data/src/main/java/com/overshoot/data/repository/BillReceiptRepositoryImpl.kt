@@ -148,6 +148,14 @@ class BillReceiptRepositoryImpl(
         }
     }
 
+    override suspend fun cancelChunkUploadBillReceipt(): Result<Unit>? {
+        return withContext(Dispatchers.IO) { uploadFileService.cancelUploadSession() }
+    }
+
+    override suspend fun deleteUploadedFile(filename: String): Result<Unit>? {
+        TODO("Not yet implemented")
+    }
+
     private fun Bitmap.toByteArray(): ByteArray {
         val stream = ByteArrayOutputStream()
         this.compress(Bitmap.CompressFormat.PNG, 100, stream)

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.overshoot.data.repository.BillReceiptRepository
 import com.overshoot.moneygoalapp.component.scanbill.uistatemodel.ImageInfoUIState
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -14,6 +16,7 @@ enum class ScanBillStatus {
     LOADING,
     ANALYZING,
     ERROR,
+    CANCELING,
     DONE
 }
 
@@ -26,13 +29,15 @@ data class ScanBillUIState(
 
 class ScanBillViewModel(private val billReceiptRepository: BillReceiptRepository): ViewModel() {
 
+    private var uploadJob: Job? = null
+
     private val _uiState = MutableStateFlow(ScanBillUIState(status = ScanBillStatus.DONE, isSubmitAble = false, progress = 0.0, detail = ""))
     val uiState = _uiState.asStateFlow()
 
-    var _imageInfo: ImageInfoUIState? = null
+    var imageInfo: ImageInfoUIState? = null
 
     fun collectImage(image: ImageInfoUIState?) {
-        _imageInfo = image
+        imageInfo = image
         _uiState.value = ScanBillUIState(
             status = ScanBillStatus.DONE,
             isSubmitAble = true,
@@ -42,16 +47,17 @@ class ScanBillViewModel(private val billReceiptRepository: BillReceiptRepository
     }
 
     fun loadCollectedImage(): ImageInfoUIState? {
-        return _imageInfo
+        return imageInfo
     }
 
     fun submitImage() {
-        if (_imageInfo?.imageUri != null && _imageInfo?.imageFileName != null && _imageInfo?.mimeType != null) {
-            viewModelScope.launch {
+        if (imageInfo?.imageUri != null && imageInfo?.imageFileName != null && imageInfo?.mimeType != null) {
+            uploadJob = Job()
+            viewModelScope.launch(uploadJob!!) {
                 billReceiptRepository.chunkSubmitBillReceipt(
-                    image = _imageInfo?.imageUri!!,
-                    filename = _imageInfo?.imageFileName!!,
-                    type = _imageInfo?.mimeType!!
+                    image = imageInfo?.imageUri!!,
+                    filename = imageInfo?.imageFileName!!,
+                    type = imageInfo?.mimeType!!
                 )
                     .collect { result ->
                         result
@@ -100,6 +106,69 @@ class ScanBillViewModel(private val billReceiptRepository: BillReceiptRepository
                                 )
                             }
                     }
+            }
+        }
+    }
+
+    fun confirmCancel() {
+        uploadJob?.cancel()
+        when (_uiState.value.status) {
+            ScanBillStatus.LOADING -> {
+                viewModelScope.launch {
+                    _uiState.value = ScanBillUIState(
+                        status = ScanBillStatus.CANCELING,
+                        isSubmitAble = false,
+                        progress = 0.0,
+                        detail = ""
+                    )
+                    delay(500)
+                    billReceiptRepository.cancelChunkUploadBillReceipt()
+                        ?.onSuccess {
+                            _uiState.value = ScanBillUIState(
+                                status = ScanBillStatus.DONE,
+                                isSubmitAble = true,
+                                progress = 0.0,
+                                detail = ""
+                            )
+                        }
+                        ?.onFailure {
+                            _uiState.value = ScanBillUIState(
+                                status = ScanBillStatus.ERROR,
+                                isSubmitAble = true,
+                                progress = 0.0,
+                                detail = it.message ?: ""
+                            )
+                        }
+                }
+            }
+            ScanBillStatus.ANALYZING -> {
+                viewModelScope.launch {
+                    billReceiptRepository.deleteUploadedFile("")
+                        ?.onSuccess {
+                            _uiState.value = ScanBillUIState(
+                                status = ScanBillStatus.DONE,
+                                isSubmitAble = true,
+                                progress = 0.0,
+                                detail = ""
+                            )
+                        }
+                        ?.onFailure {
+                            _uiState.value = ScanBillUIState(
+                                status = ScanBillStatus.ERROR,
+                                isSubmitAble = true,
+                                progress = 0.0,
+                                detail = it.message ?: ""
+                            )
+                        }
+                }
+            }
+            else -> {
+                _uiState.value = ScanBillUIState(
+                    status = ScanBillStatus.DONE,
+                    isSubmitAble = true,
+                    progress = 0.0,
+                    detail = ""
+                )
             }
         }
     }
